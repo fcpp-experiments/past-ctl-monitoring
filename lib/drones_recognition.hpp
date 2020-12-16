@@ -22,7 +22,7 @@ namespace fcpp {
 namespace coordination {
 
 //! @brief Drones recognition case study.
-FUN void drones_recognition(ARGS) { CODE
+MAIN() {
     bool handling = false;
     bool heading = false;
     bool area_handled = logic::area_handled(CALL, handling);

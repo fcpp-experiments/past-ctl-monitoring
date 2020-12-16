@@ -20,7 +20,7 @@ namespace fcpp {
 namespace coordination {
 
 //! @brief Crowd safety case study.
-FUN void crowd_safety(ARGS) { CODE
+MAIN() {
     bool safe = true;
     bool alert = false;
     bool my_safety_preserved = logic::my_safety_preserved(CALL, safe, alert);

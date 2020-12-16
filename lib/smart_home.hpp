@@ -20,7 +20,7 @@ namespace fcpp {
 namespace coordination {
 
 //! @brief Smart home case study.
-FUN void smart_home(ARGS) { CODE
+MAIN() {
     bool s = false;
     bool a = false;
     bool p = false;
