@@ -56,7 +56,7 @@ MAIN() {
     node.storage(local_weak_monitor{}) = active_when_present_twice;
     node.storage(global_strong_monitor{}) = always_active_when_present;
     node.storage(global_weak_monitor{}) = always_active_when_present_twice;
-    node.storage(col{}) = s ? (a ? color(1.0, 1.0, 0.0) : color(0.5, 0.5, 0.5)) : color(0.0, 0.0, 1.0);
+    node.storage(col{}) = s ? (a ? YELLOW : SILVER) : PURPLE;
     node.storage(size{}) = always_active_when_present_twice ? 3 : active_when_present_twice ? 6 : 10;
 }
 
