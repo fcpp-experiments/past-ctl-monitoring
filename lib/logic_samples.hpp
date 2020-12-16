@@ -45,21 +45,13 @@ FUN bool handled_heading(ARGS, bool handling, bool heading) { CODE
 }
 
 //! @brief Drones don't handle if area handled (first form).
-FUN bool no_redundancy1(ARGS, bool handling) { CODE
+FUN bool no_redundancy(ARGS, bool handling) { CODE
     return AH(CALL, !(handling && EY(CALL, EP(CALL, handling))));
 }
 
 //! @brief Drones don't handle if area handled (second form).
-FUN bool no_redundancy2(ARGS, bool handling) { CODE
+FUN bool handled_no_redundancy(ARGS, bool handling) { CODE
     return AS(CALL, !handling, handling && AY(CALL, AH(CALL, !handling)));
-}
-
-//! @brief Drones don't handle if area handled (checks both forms match).
-FUN bool no_redundancy(ARGS, bool handling) { CODE
-    bool b1 = no_redundancy1(CALL, handling);
-    bool b2 = no_redundancy2(CALL, handling);
-    assert(b1 == b2);
-    return b1;
 }
 
 
@@ -87,6 +79,8 @@ FUN void drones_recognition(ARGS) { CODE
 //    logic::area_handled(CALL, handling);
 //    logic::handled_heading(CALL, handling, heading);
 //    logic::no_redundancy(CALL, handling);
+//    logic::handled_no_redundancy(CALL, handling);
+//    assert(handled_no_redundancy == (no_redundancy and area_handled));
     // TODO: how many areas? Are they just point that need to be reached? Some drones busy with random walking, other steady and available do rush to handle areas
 }
 

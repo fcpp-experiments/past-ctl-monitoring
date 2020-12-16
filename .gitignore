@@ -3,7 +3,7 @@
 .#*
 bazel-*
 _bazel_*
-build/
+glbuild/
 doc/
 .vagrant/
 .DS_Store
