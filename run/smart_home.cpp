@@ -27,25 +27,26 @@ using namespace fcpp;
 using namespace component::tags;
 using namespace coordination::tags;
 
-#define DEV_NUM 300
-#define FREQ    1
+#define LIGHTS_NUM  12
+#define PEOPLE_NUM  12
 
 using round_s = sequence::periodic<
-    distribution::interval_n<times_t, 0, FREQ>,
-    distribution::weibull_n<times_t, FREQ*10, FREQ, 10>
+    distribution::interval_n<times_t, 0, 1>,
+    distribution::weibull_n<times_t, 10, 1, 10>
 >;
 
-using rectangle_d = distribution::rect_n<1, 0, 0, 500, 500>;
+using rectangle_d = distribution::rect_n<1, 0, -7, 24, 7>;
 constexpr size_t dim = 2;
 
 DECLARE_OPTIONS(opt,
-    parallel<true>,
+    parallel<false>,
     synchronised<false>,
     program<coordination::main>,
     round_schedule<round_s>,
     dimension<dim>,
     exports<vec<dim>, bool>,
-    log_schedule<sequence::periodic_n<1, 0, 10>>,
+    retain<metric::retain<2,1>>,
+    log_schedule<sequence::periodic_n<1, 0, 1>>,
     tuple_store<
         local_strong_monitor,   bool,
         local_weak_monitor,     bool,
@@ -54,9 +55,15 @@ DECLARE_OPTIONS(opt,
         col,                    color,
         size,                   double
     >,
-    spawn_schedule<sequence::multiple_n<DEV_NUM, 0>>,
+    aggregators<
+        local_strong_monitor,   aggregator::mean<double>,
+        local_weak_monitor,     aggregator::mean<int>,
+        global_strong_monitor,  aggregator::mean<double>,
+        global_weak_monitor,    aggregator::mean<int>
+    >,
+    spawn_schedule<sequence::multiple_n<LIGHTS_NUM+PEOPLE_NUM, 0>>,
     init<x, rectangle_d>,
-    connector<connect::fixed<100>>,
+    connector<connect::fixed<3>>,
     size_tag<size>,
     color_tag<col>
 );
