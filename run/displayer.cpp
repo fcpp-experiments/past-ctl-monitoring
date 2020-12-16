@@ -2,6 +2,7 @@
 
 #include "lib/fcpp.hpp"
 #include "lib/simulation/displayer.hpp"
+#include "lib/logic_samples.hpp"
 
 /**
  * @brief Namespace containing all the objects in the FCPP library.

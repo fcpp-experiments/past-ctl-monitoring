@@ -17,6 +17,16 @@ if(MINGW)
 endif(MINGW)
 add_subdirectory(./fcpp/src/)
 
+# adding headers
+add_library(past_ctl SHARED
+    lib/crowd_safety.cpp
+    lib/drones_recognition.cpp
+    lib/logic_samples.cpp
+    lib/past_ctl.cpp
+    lib/smart_home.cpp
+)
+target_include_directories(past_ctl PRIVATE ./ ./fcpp/src/)
+
 # executable target
 add_executable(fcppGL ./run/displayer.cpp)
 
@@ -25,7 +35,8 @@ set_target_properties(fcppGL PROPERTIES VERSION &{PROJECT_VERSION})
 
 # include directories
 if(MINGW)
-target_include_directories(fcppGL PRIVATE ./fcpp/src/
+target_include_directories(fcppGL PRIVATE ./
+                                          ./fcpp/src/
                                           ./fcpp/src/external/
                                           ./fcpp/src/external/mingw-std-threads-master
                                           ./fcpp/src/external/glad-core-3.3/include/
@@ -33,7 +44,8 @@ target_include_directories(fcppGL PRIVATE ./fcpp/src/
                                           ./fcpp/src/external/glfw-3.3.2/include/
                                           ./fcpp/src/external/freetype-2.10.4/devel/)
 else()
-target_include_directories(fcppGL PRIVATE ./fcpp/src/
+target_include_directories(fcppGL PRIVATE ./
+                                          ./fcpp/src/
                                           ./fcpp/src/external/
                                           ./fcpp/src/external/glad-core-3.3/include/
                                           ./fcpp/src/external/glm-0.9.9.8/glm
@@ -45,12 +57,14 @@ endif(MINGW)
 if(MINGW)
 target_link_libraries(fcppGL PRIVATE mingw_stdthreads
                                      fcpp_master
+                                     past_ctl
                                      glm
 									 glfw
 									 stb_image
 									 freetype)
 else()
 target_link_libraries(fcppGL PRIVATE fcpp_master
+                                     past_ctl
                                      glm
 									 glfw
 									 stb_image
