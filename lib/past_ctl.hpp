@@ -2,7 +2,7 @@
 
 /**
  * @file past_ctl.hpp
- * @brief Implementation of the case study comparing collection algorithms.
+ * @brief Implementation of Past-CTL temporal logic operators.
  */
 
 #ifndef FCPP_PAST_CTL_H_

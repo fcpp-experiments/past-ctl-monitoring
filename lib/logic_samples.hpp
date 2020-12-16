@@ -1,15 +1,14 @@
 // Copyright © 2020 Giorgio Audrito. All Rights Reserved.
 
 /**
- * @file past_ctl.hpp
- * @brief Implementation of the case study comparing collection algorithms.
+ * @file logic_samples.hpp
+ * @brief Implementation of the Past-CTL logical formulas used in case studies.
  */
 
 #ifndef FCPP_LOGIC_SAMPLES_H_
 #define FCPP_LOGIC_SAMPLES_H_
 
-#include "lib/beautify.hpp"
-#include "lib/coordination/utils.hpp"
+#include "lib/past_ctl.hpp"
 
 
 /**
@@ -66,31 +65,6 @@ FUN bool active_when_present_twice(ARGS, bool s, bool a, bool p) { CODE
 }
 
 }
-
-//! @brief Crowd safety case study.
-FUN void crowd_safety(ARGS) { CODE
-//    logic::my_safety_preserved(CALL, safe, alert);
-//    logic::all_safety_preserved(CALL, safe, alert);
-    // TODO: people randomly walking in area; then a sub-area becomes dangerous and they evacuate through gradients
-}
-
-//! @brief Drones recognition case study.
-FUN void drones_recognition(ARGS) { CODE
-//    logic::area_handled(CALL, handling);
-//    logic::handled_heading(CALL, handling, heading);
-//    logic::no_redundancy(CALL, handling);
-//    logic::handled_no_redundancy(CALL, handling);
-//    assert(handled_no_redundancy == (no_redundancy and area_handled));
-    // TODO: how many areas? Are they just point that need to be reached? Some drones busy with random walking, other steady and available do rush to handle areas
-}
-
-//! @brief Smart home case study.
-FUN void smart_home(ARGS) { CODE
-//    logic::active_when_present(CALL, s, a, p);
-//    logic::active_when_present_twice(CALL, s, a, p);
-    // TODO: just a corridor, or corridor + adjacent rooms?
-}
-
 
 }
 
