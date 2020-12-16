@@ -86,7 +86,7 @@ FUN void building_walk(ARGS, real_t max_v, real_t period) { CODE
                 t = room_door(CALL, row, col, +2);
             else if (t == room_door(CALL, row, col, +2))
                 t = random_room_target(CALL, row, col);
-            else if (node.next_real() < 0.03) {
+            else if (node.next_real() < 0.05) {
                 if (node.next_real() < 0.5)
                     t = random_room_target(CALL, row, col);
                 else
@@ -102,10 +102,10 @@ FUN void building_walk(ARGS, real_t max_v, real_t period) { CODE
 MAIN() {
     using namespace tags;
 
-    building_walk(CALL, 1, 1);
+    building_walk(CALL, 1.4, 1);
 
-    constexpr real_t FALSE_POSITIVE = 0.01; // prob. of seeing something which is not there
-    constexpr real_t FALSE_NEGATIVE = 0.01; // prob. of not seeing something which is there
+    constexpr real_t FALSE_POSITIVE = 0.003; // prob. of seeing something which is not there
+    constexpr real_t FALSE_NEGATIVE = 0.003; // prob. of not seeing something which is there
     size_t c = count_hood(CALL) - 1;
     real_t prob = (1-FALSE_POSITIVE)*(1-pow(FALSE_NEGATIVE,c)) + FALSE_POSITIVE;
     bool s = node.uid < 12;

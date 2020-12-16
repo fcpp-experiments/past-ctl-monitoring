@@ -28,14 +28,14 @@ using namespace component::tags;
 using namespace coordination::tags;
 
 #define LIGHTS_NUM  12
-#define PEOPLE_NUM  16
+#define PEOPLE_NUM  12
 
 using round_s = sequence::periodic<
     distribution::interval_n<times_t, 0, 1>,
     distribution::weibull_n<times_t, 10, 1, 10>
 >;
 
-using rectangle_d = distribution::rect_n<1, 0, -1, 24, 1>;
+using rectangle_d = distribution::rect_n<1, 0, -7, 24, 7>;
 constexpr size_t dim = 2;
 
 DECLARE_OPTIONS(opt,
