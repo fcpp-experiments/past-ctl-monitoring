@@ -3,6 +3,7 @@ cc_library(
     hdrs = ["crowd_safety.hpp"],
     srcs = ['crowd_safety.cpp'],
     deps = [
+	"@fcpp//lib:data",
         "//lib:logic_samples",
     ],
     visibility = [
@@ -15,6 +16,7 @@ cc_library(
     hdrs = ["drones_recognition.hpp"],
     srcs = ['drones_recognition.cpp'],
     deps = [
+	"@fcpp//lib:data",
         "//lib:logic_samples",
     ],
     visibility = [
@@ -52,6 +54,7 @@ cc_library(
     hdrs = ["smart_home.hpp"],
     srcs = ['smart_home.cpp'],
     deps = [
+	"@fcpp//lib:data",
         "//lib:logic_samples",
     ],
     visibility = [

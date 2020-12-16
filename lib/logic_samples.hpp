@@ -56,12 +56,22 @@ FUN bool handled_no_redundancy(ARGS, bool handling) { CODE
 
 //! @brief System is active whenever proximity.
 FUN bool active_when_present(ARGS, bool s, bool a, bool p) { CODE
-    return AH(CALL, s <= (p == a));
+    return s <= (p == a);
+}
+
+//! @brief System is active whenever proximity.
+FUN bool always_active_when_present(ARGS, bool s, bool a, bool p) { CODE
+    return AH(CALL, active_when_present(CALL, s, a, p));
 }
 
 //! @brief System is active whenever proximity consistent for two rounds.
 FUN bool active_when_present_twice(ARGS, bool s, bool a, bool p) { CODE
-    return AH(CALL, s <= ((p && Y(CALL, p)) <= a && (!p && Y(CALL, !p)) <= !a));
+    return s <= ((p && Y(CALL, p)) <= a && (!p && Y(CALL, !p)) <= !a);
+}
+
+//! @brief System is active whenever proximity consistent for two rounds.
+FUN bool always_active_when_present_twice(ARGS, bool s, bool a, bool p) { CODE
+    return AH(CALL, active_when_present_twice(CALL, s, a, p));
 }
 
 }
