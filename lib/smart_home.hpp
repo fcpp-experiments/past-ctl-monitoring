@@ -68,8 +68,7 @@ FUN void building_walk(ARGS, real_t max_v, real_t period) { CODE
     if (node.uid < 12) {
         int row = node.uid / 4;
         int col = node.uid % 4;
-        follow_target(CALL, make_vec(6*col+3, 5*row-5), 20*max_v, period);
-//        node.position() = make_vec(6*col+3, 5*row-5); BUGGED! TO SOLVE
+        node.position() = make_vec(6*col+3, 5*row-5);
         return;
     }
     old(CALL, node.position(), [&](vec<2> t){
