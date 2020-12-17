@@ -22,8 +22,8 @@ target_include_directories(past_ctl PRIVATE ./ ./fcpp/src/)
 
 # project name, version and description
 project(fcppGL
-	VERSION 0.1.0
-	DESCRIPTION "FieldCalc++ OpenGL simulator."
+    VERSION 0.1.0
+    DESCRIPTION "FieldCalc++ OpenGL simulator."
 )
 
 # executable target
@@ -45,9 +45,9 @@ target_include_directories(fcppGL PRIVATE ./
 target_link_libraries(fcppGL PRIVATE fcpp
                                      past_ctl
                                      glm
-									 glfw
-									 stb_image
-									 freetype)
+                                     glfw
+                                     stb_image
+                                     freetype)
 
 #copying shaders into build
 add_custom_command(TARGET fcppGL PRE_BUILD
@@ -71,14 +71,14 @@ endif(MINGW)
 
 # defining install rules
 install(TARGETS fcppGL
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 # project name, version and description
 project(smart_home
-	VERSION 0.1.0
-	DESCRIPTION "Smart Home Case Study."
+    VERSION 0.1.0
+    DESCRIPTION "Smart Home Case Study."
 )
 
 # executable target
@@ -100,9 +100,9 @@ target_include_directories(smart_home PRIVATE ./
 target_link_libraries(smart_home PRIVATE fcpp
                                      past_ctl
                                      glm
-									 glfw
-									 stb_image
-									 freetype)
+                                     glfw
+                                     stb_image
+                                     freetype)
 
 #copying shaders into build
 add_custom_command(TARGET smart_home PRE_BUILD
@@ -126,6 +126,6 @@ endif(MINGW)
 
 # defining install rules
 install(TARGETS smart_home
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
