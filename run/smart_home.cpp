@@ -97,8 +97,12 @@ DECLARE_OPTIONS(opt,
 
 int main() {
     plotter_t p;
-    component::interactive_simulator<opt>::net network{common::make_tagged_tuple<plotter>(&p)};
-    network.run();
+    std::cout << "/*\n";
+    {
+        component::interactive_simulator<opt>::net network{common::make_tagged_tuple<plotter>(&p)};
+        network.run();
+    }
+    std::cout << "*/\n";
     std::cout << plot::file("smart_home", p.build());
     return 0;
 }
