@@ -106,24 +106,28 @@ MAIN() {
 
     building_walk(CALL, 1.4, 1);
 
-    constexpr real_t FALSE_POSITIVE = 0.003; // prob. of seeing something which is not there
-    constexpr real_t FALSE_NEGATIVE = 0.003; // prob. of not seeing something which is there
+    constexpr real_t STILL_FAIL = 0.003; // prob. of failure in still situation
+    constexpr real_t SWITCH_FAIL = 0.05; // prob. of failure in changing situation
     size_t c = count_hood(CALL) - 1;
-    real_t prob = (1-FALSE_POSITIVE)*(1-pow(FALSE_NEGATIVE,c)) + FALSE_POSITIVE;
     bool s = node.uid < 12;
     bool p = c > 0;
-    bool a = s and (node.next_real() < prob);
+    real_t prob = p == old(CALL, p) ? STILL_FAIL : SWITCH_FAIL;
+    bool a = s and ((node.next_real() < prob) != p);
 
     bool active_when_present = logic::active_when_present(CALL, s, a, p);
     bool active_when_present_twice = logic::active_when_present_twice(CALL, s, a, p);
     bool always_active_when_present = logic::always_active_when_present(CALL, s, a, p);
     bool always_active_when_present_twice = logic::always_active_when_present_twice(CALL, s, a, p);
+    assert(active_when_present <= active_when_present_twice);
+    assert(always_active_when_present <= active_when_present);
+    assert(always_active_when_present <= always_active_when_present_twice);
+    assert(always_active_when_present_twice <= active_when_present_twice);
 
     node.storage(fail<local_strong_monitor>{}) = not active_when_present;
     node.storage(fail<local_weak_monitor>{}) = not active_when_present_twice;
     node.storage(fail<global_strong_monitor>{}) = not always_active_when_present;
     node.storage(fail<global_weak_monitor>{}) = not always_active_when_present_twice;
-    node.storage(col{}) = s ? (a ? YELLOW : SILVER) : PURPLE;
+    node.storage(col{}) = s ? (a ? YELLOW : SILVER) : TAN;
     node.storage(size{}) = always_active_when_present_twice ? 0.3 : active_when_present_twice ? 0.5 : 0.8;
 }
 
