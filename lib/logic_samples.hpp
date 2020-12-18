@@ -38,11 +38,6 @@ FUN bool area_handled(ARGS, bool handling) { CODE
     return EP(CALL, handling);
 }
 
-//! @brief Area is eventually handled by drone heading there since then.
-FUN bool handled_heading(ARGS, bool handling, bool heading) { CODE
-    return EP(CALL, handling & H(CALL, heading));
-}
-
 //! @brief Drones don't handle if area handled (first form).
 FUN bool no_redundancy(ARGS, bool handling) { CODE
     return AH(CALL, !(handling & EY(CALL, EP(CALL, handling))));

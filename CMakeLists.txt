@@ -20,60 +20,118 @@ add_library(past_ctl SHARED
 )
 target_include_directories(past_ctl PRIVATE ./ ./fcpp/src/)
 
+
 # project name, version and description
-project(fcppGL
+project(crowd_safety
     VERSION 0.1.0
-    DESCRIPTION "FieldCalc++ OpenGL simulator."
+    DESCRIPTION "Crowd Safety Case Study."
 )
 
 # executable target
-add_executable(fcppGL ./run/displayer.cpp)
+add_executable(crowd_safety ./run/crowd_safety.cpp)
 
 # VERSION property
-set_target_properties(fcppGL PROPERTIES VERSION &{PROJECT_VERSION})
+set_target_properties(crowd_safety PROPERTIES VERSION &{PROJECT_VERSION})
 
 # include directories
-target_include_directories(fcppGL PRIVATE ./
-                                          ./fcpp/src/
-                                          ./fcpp/src/external/
-                                          ./fcpp/src/external/glad-core-3.3/include/
-                                          ./fcpp/src/external/glm-0.9.9.8/glm
-                                          ./fcpp/src/external/glfw-3.3.2/include/
-                                          ./fcpp/src/external/freetype-2.10.4/devel/)
+target_include_directories(crowd_safety PRIVATE ./
+                                                ./fcpp/src/
+                                                ./fcpp/src/external/
+                                                ./fcpp/src/external/glad-core-3.3/include/
+                                                ./fcpp/src/external/glm-0.9.9.8/glm
+                                                ./fcpp/src/external/glfw-3.3.2/include/
+                                                ./fcpp/src/external/freetype-2.10.4/devel/)
 
 # link libraries
-target_link_libraries(fcppGL PRIVATE fcpp
-                                     past_ctl
-                                     glm
-                                     glfw
-                                     stb_image
-                                     freetype)
+target_link_libraries(crowd_safety PRIVATE fcpp
+                                           past_ctl
+                                           glm
+                                           glfw
+                                           stb_image
+                                           freetype)
 
 #copying shaders into build
-add_custom_command(TARGET fcppGL PRE_BUILD
+add_custom_command(TARGET crowd_safety PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_SOURCE_DIR}/fcpp/src/lib/graphics/shaders/ $<TARGET_FILE_DIR:fcppGL>/shaders/)
+                       ${CMAKE_SOURCE_DIR}/fcpp/src/lib/graphics/shaders/ $<TARGET_FILE_DIR:crowd_safety>/shaders/)
 
 #copying fonts into build
-add_custom_command(TARGET fcppGL PRE_BUILD
+add_custom_command(TARGET crowd_safety PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_SOURCE_DIR}/fcpp/src/lib/graphics/fonts/ $<TARGET_FILE_DIR:fcppGL>/fonts/)
+                       ${CMAKE_SOURCE_DIR}/fcpp/src/lib/graphics/fonts/ $<TARGET_FILE_DIR:crowd_safety>/fonts/)
 
 #target compile options
-target_compile_options(fcppGL PUBLIC "-DFCPP_CONFIGURATION=FCPP_CONFIGURATION_DEPENDENT")
+target_compile_options(crowd_safety PUBLIC "-DFCPP_CONFIGURATION=FCPP_CONFIGURATION_DEPENDENT")
 
 # MinGW support to C++ threads
 if(MINGW)
-    target_include_directories(fcppGL PRIVATE ./fcpp/src/external/mingw-std-threads-master/)
-    target_link_libraries(fcppGL PRIVATE mingw_stdthreads)
+    target_include_directories(crowd_safety PRIVATE ./fcpp/src/external/mingw-std-threads-master/)
+    target_link_libraries(crowd_safety PRIVATE mingw_stdthreads)
     option(MINGW_STDTHREADS_GENERATE_STDHEADERS "" ON)
 endif(MINGW)
 
 # defining install rules
-install(TARGETS fcppGL
+install(TARGETS crowd_safety
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+
+# project name, version and description
+project(drones_recognition
+    VERSION 0.1.0
+    DESCRIPTION "Drones Recognition Case Study."
+)
+
+# executable target
+add_executable(drones_recognition ./run/drones_recognition.cpp)
+
+# VERSION property
+set_target_properties(drones_recognition PROPERTIES VERSION &{PROJECT_VERSION})
+
+# include directories
+target_include_directories(drones_recognition PRIVATE ./
+                                                      ./fcpp/src/
+                                                      ./fcpp/src/external/
+                                                      ./fcpp/src/external/glad-core-3.3/include/
+                                                      ./fcpp/src/external/glm-0.9.9.8/glm
+                                                      ./fcpp/src/external/glfw-3.3.2/include/
+                                                      ./fcpp/src/external/freetype-2.10.4/devel/)
+
+# link libraries
+target_link_libraries(drones_recognition PRIVATE fcpp
+                                                 past_ctl
+                                                 glm
+                                                 glfw
+                                                 stb_image
+                                                 freetype)
+
+#copying shaders into build
+add_custom_command(TARGET drones_recognition PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/fcpp/src/lib/graphics/shaders/ $<TARGET_FILE_DIR:drones_recognition>/shaders/)
+
+#copying fonts into build
+add_custom_command(TARGET drones_recognition PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/fcpp/src/lib/graphics/fonts/ $<TARGET_FILE_DIR:drones_recognition>/fonts/)
+
+#target compile options
+target_compile_options(drones_recognition PUBLIC "-DFCPP_CONFIGURATION=FCPP_CONFIGURATION_DEPENDENT")
+
+# MinGW support to C++ threads
+if(MINGW)
+    target_include_directories(drones_recognition PRIVATE ./fcpp/src/external/mingw-std-threads-master/)
+    target_link_libraries(drones_recognition PRIVATE mingw_stdthreads)
+    option(MINGW_STDTHREADS_GENERATE_STDHEADERS "" ON)
+endif(MINGW)
+
+# defining install rules
+install(TARGETS drones_recognition
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
 
 # project name, version and description
 project(smart_home
