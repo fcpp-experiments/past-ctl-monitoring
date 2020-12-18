@@ -27,8 +27,8 @@ using namespace fcpp;
 using namespace component::tags;
 using namespace coordination::tags;
 
-#define DEV_NUM 100
-#define FREQ    1
+constexpr int DEV_NUM=200;
+constexpr int FREQ=1;
 
 using round_s = sequence::periodic<
   distribution::interval_n<times_t, 0, FREQ>,
@@ -44,7 +44,7 @@ DECLARE_OPTIONS(opt,
 		program<coordination::main>,
 		round_schedule<round_s>,
 		dimension<dim>,
-		exports<vec<dim>, double, bool>,
+		exports<vec<dim>, double, bool, tuple<double,double>>,
 		log_schedule<sequence::periodic_n<1, 0, 10>>,
 		tuple_store<
 		distance_c,         color,

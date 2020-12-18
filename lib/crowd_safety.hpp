@@ -19,6 +19,10 @@
  */
 namespace fcpp {
 
+  bool operator< (const vec<2>& v1, const vec<2>& v2) {
+    return false;
+  }
+
 //! @brief Namespace containing the libraries of coordination routines.
 namespace coordination {
 
@@ -40,20 +44,27 @@ namespace coordination {
     struct size {};
   }
 
+  
   //! @brief number of areas (one of which is the incident area)
   constexpr int nareas = 12;  
 
   //! @brief ID of the incident area
-  constexpr int idinc = 6;
+  constexpr int idinc = 8;
 
   //! @brief start time of the incident
-  constexpr int inc_start = 20;
+  constexpr int inc_start = 10;
 
   //! @brief end time of the incident  
-  constexpr int inc_end = 50;  
+  constexpr int inc_end = 30;  
 
   //! @brief radius of the incident effects
   constexpr double inc_radius = 30;
+
+  //! @brief radius of the incident effects
+  constexpr double max_speed = 30;
+
+  //! @brief radius of the incident effects
+  constexpr double period = 1;
   
   //! @brief Main function.
   MAIN() {
@@ -62,10 +73,9 @@ namespace coordination {
   
     vec<2> low = make_vec(0,0);
     vec<2> high = make_vec(500,500);
-    
-    if (!isarea)
-      rectangle_walk(CALL, low, high, 30.5, 1); 
 
+    //bool r = myf(low,high);
+    
     // vec<2> pos = node.position();
     // vec<2> target = random_rectangle_target(CALL, low, high);
     
@@ -88,11 +98,24 @@ namespace coordination {
     if (t>=inc_start && t<=inc_end)
       alert = true;    
     
-    double dist = abf_distance(CALL, isinc);
+    double dist = bis_distance(CALL, isinc, period, max_speed);
     if (dist<inc_radius) {
       safe = false;
     }
 
+    if (!isarea)
+      if(alert) {
+	// //OK
+	// auto f = make_tuple(nbr(CALL, dist), nbr(CALL, make_tuple(1.0,2.0)));
+	// auto target = get<1>(max_hood(CALL, f));      
+	//KO
+	auto f = make_tuple(nbr(CALL, dist), node.nbr_vec());
+	auto target = get<1>(max_hood(CALL, f));
+      
+	follow_target(CALL, target, max_speed, period);			     
+      } else
+	rectangle_walk(CALL, low, high, max_speed, period);
+    
     bool my_safety_preserved = logic::my_safety_preserved(CALL, safe, alert);
     bool all_safety_preserved = logic::all_safety_preserved(CALL, safe, alert);
     
