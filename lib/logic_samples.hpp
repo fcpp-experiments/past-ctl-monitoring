@@ -24,12 +24,12 @@ namespace logic {
 
 //! @brief During alert, once safe stays safe.
 FUN bool my_safety_preserved(ARGS, bool safe, bool alert) { CODE
-    return H(CALL, Y(CALL, safe && alert) <= (safe || !alert));
+    return H(CALL, Y(CALL, safe & alert) <= (safe | !alert));
 }
 
 //! @brief During alert, once safe stays safe.
 FUN bool all_safety_preserved(ARGS, bool safe, bool alert) { CODE
-    return AH(CALL, Y(CALL, safe && alert) <= (safe || !alert));
+    return AH(CALL, Y(CALL, safe & alert) <= (safe | !alert));
 }
 
 
@@ -40,17 +40,17 @@ FUN bool area_handled(ARGS, bool handling) { CODE
 
 //! @brief Area is eventually handled by drone heading there since then.
 FUN bool handled_heading(ARGS, bool handling, bool heading) { CODE
-    return EP(CALL, handling && H(CALL, heading));
+    return EP(CALL, handling & H(CALL, heading));
 }
 
 //! @brief Drones don't handle if area handled (first form).
 FUN bool no_redundancy(ARGS, bool handling) { CODE
-    return AH(CALL, !(handling && EY(CALL, EP(CALL, handling))));
+    return AH(CALL, !(handling & EY(CALL, EP(CALL, handling))));
 }
 
 //! @brief Drones don't handle if area handled (second form).
 FUN bool handled_no_redundancy(ARGS, bool handling) { CODE
-    return AS(CALL, !handling, handling && AY(CALL, AH(CALL, !handling)));
+    return AS(CALL, !handling, handling & AY(CALL, AH(CALL, !handling)));
 }
 
 
@@ -66,7 +66,7 @@ FUN bool always_active_when_present(ARGS, bool s, bool a, bool p) { CODE
 
 //! @brief System is active whenever proximity consistent for two rounds.
 FUN bool active_when_present_twice(ARGS, bool s, bool a, bool p) { CODE
-    return s <= ((p && Y(CALL, p)) <= a && (!p && Y(CALL, !p)) <= !a);
+    return s <= ((p & Y(CALL, p)) <= a & (!p & Y(CALL, !p)) <= !a);
 }
 
 //! @brief System is active whenever proximity consistent for two rounds.

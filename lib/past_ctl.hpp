@@ -44,64 +44,64 @@ FUN bool EY(ARGS, bool F) { CODE
 
 //! @brief F1 holds since F2 held in the same device.
 FUN bool S(ARGS, bool F1, bool F2) { CODE
-    return old(CALL, false, [&](bool o){
-        return F2 || (F1 && o);
+    return old(CALL, false, [&](bool o) -> bool {
+        return F2 | (F1 & o);
     });
 }
 
 //! @brief F1 holds since F2 held in all devices.
 FUN bool AS(ARGS, bool F1, bool F2) { CODE
-    return nbr(CALL, false, [&](field<bool> n){
-        return F2 || (F1 && all_hood(CALL, n));
+    return nbr(CALL, false, [&](field<bool> n) -> bool {
+        return F2 | (F1 & all_hood(CALL, n));
     });
 }
 
 //! @brief F1 holds since F2 held in any device.
 FUN bool ES(ARGS, bool F1, bool F2) { CODE
-    return nbr(CALL, false, [&](field<bool> n){
-        return F2 || (F1 && all_hood(CALL, n));
+    return nbr(CALL, false, [&](field<bool> n) -> bool {
+        return F2 | (F1 & all_hood(CALL, n));
     });
 }
 
 //! @brief Previously in the same device.
 FUN bool P(ARGS, bool F) { CODE
-    return old(CALL, false, [&](bool o){
-        return F || o;
+    return old(CALL, false, [&](bool o) -> bool {
+        return F | o;
     });
 }
 
 //! @brief Previously in all devices.
 FUN bool AP(ARGS, bool F) { CODE
-    return nbr(CALL, false, [&](field<bool> n){
-        return F || all_hood(CALL, n);
+    return nbr(CALL, false, [&](field<bool> n) -> bool {
+        return F | all_hood(CALL, n);
     });
 }
 
 //! @brief Previously in any device.
 FUN bool EP(ARGS, bool F) { CODE
-    return nbr(CALL, false, [&](field<bool> n){
-        return F || any_hood(CALL, n);
+    return nbr(CALL, false, [&](field<bool> n) -> bool {
+        return F | any_hood(CALL, n);
     });
 }
 
 //! @brief Historically in the same device.
 FUN bool H(ARGS, bool F) { CODE
-    return old(CALL, true, [&](bool o){
-        return F && o;
+    return old(CALL, true, [&](bool o) -> bool {
+        return F & o;
     });
 }
 
 //! @brief Historically in all devices.
 FUN bool AH(ARGS, bool F) { CODE
-    return nbr(CALL, true, [&](field<bool> n){
-        return F && all_hood(CALL, n);
+    return nbr(CALL, true, [&](field<bool> n) -> bool {
+        return F & all_hood(CALL, n);
     });
 }
 
 //! @brief Historically in any device.
 FUN bool EH(ARGS, bool F) { CODE
-    return nbr(CALL, true, [&](field<bool> n){
-        return F && any_hood(CALL, n);
+    return nbr(CALL, true, [&](field<bool> n) -> bool {
+        return F & any_hood(CALL, n);
     });
 }
 

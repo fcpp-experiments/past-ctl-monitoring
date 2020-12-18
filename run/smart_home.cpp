@@ -23,53 +23,86 @@ DECLARE_COMBINE(interactive_simulator, displayer, calculus, simulated_connector,
 
 }
 
+
 using namespace fcpp;
 using namespace component::tags;
 using namespace coordination::tags;
 
-#define LIGHTS_NUM  12
-#define PEOPLE_NUM  12
 
+//! @brief Number of lights in the building.
+constexpr size_t lights_num = 12;
+
+//! @brief Number of walking people in the building.
+constexpr size_t people_num = 12;
+
+//! @brief Dimensionality of the space.
+constexpr size_t dim = 2;
+
+
+//! @brief Description of the round schedule.
 using round_s = sequence::periodic<
     distribution::interval_n<times_t, 0, 1>,
     distribution::weibull_n<times_t, 10, 1, 10>
 >;
 
-using rectangle_d = distribution::rect_n<1, 0, -7, 24, 7>;
-constexpr size_t dim = 2;
+//! @brief Description of the export schedule.
+using export_s = sequence::periodic_n<1, 0, 1>;
 
+//! @brief Description of the sequence of node creation events.
+using spawn_s = sequence::multiple_n<lights_num + people_num, 0>;
+
+//! @brief Description of the initial position distribution.
+using rectangle_d = distribution::rect_n<1, 0, -7, 24, 7>;
+
+//! @brief Storage tags and types.
+using storage_t = tuple_store<
+    fail<local_strong_monitor>,     bool,
+    fail<local_weak_monitor>,       bool,
+    fail<global_strong_monitor>,    bool,
+    fail<global_weak_monitor>,      bool,
+    col,                            color,
+    size,                           double
+>;
+
+//! @brief Storage tags to be logged with aggregators.
+using aggregator_t = aggregators<
+    fail<local_strong_monitor>,     aggregator::mean<double>,
+    fail<local_weak_monitor>,       aggregator::mean<double>,
+    fail<global_strong_monitor>,    aggregator::mean<double>,
+    fail<global_weak_monitor>,      aggregator::mean<double>
+>;
+
+//! @brief Plot description.
+using plotter_t = plot::plotter<aggregator_t, plot::time, fail>;
+
+//! @brief Options list.
 DECLARE_OPTIONS(opt,
     parallel<false>,
     synchronised<false>,
-    program<coordination::main>,
-    round_schedule<round_s>,
     dimension<dim>,
+    program<coordination::main>,
     exports<vec<dim>, bool>,
     retain<metric::retain<2,1>>,
-    log_schedule<sequence::periodic_n<1, 0, 1>>,
-    tuple_store<
-        local_strong_monitor,   bool,
-        local_weak_monitor,     bool,
-        global_strong_monitor,  bool,
-        global_weak_monitor,    bool,
-        col,                    color,
-        size,                   double
-    >,
-    aggregators<
-        local_strong_monitor,   aggregator::mean<double>,
-        local_weak_monitor,     aggregator::mean<int>,
-        global_strong_monitor,  aggregator::mean<double>,
-        global_weak_monitor,    aggregator::mean<int>
-    >,
-    spawn_schedule<sequence::multiple_n<LIGHTS_NUM+PEOPLE_NUM, 0>>,
-    init<x, rectangle_d>,
     connector<connect::fixed<3>>,
+    round_schedule<round_s>,
+    log_schedule<export_s>,
+    spawn_schedule<spawn_s>,
+    init<x, rectangle_d>,
+    storage_t,
+    aggregator_t,
+    plot_type<plotter_t>,
     size_tag<size>,
     color_tag<col>
 );
 
 int main() {
-    component::interactive_simulator<opt>::net network{common::make_tagged_tuple<epsilon>(0.1)};
-    network.run();
+    plotter_t p;
+    std::cout << "/*\n";
+    {
+        component::interactive_simulator<opt>::net network{common::make_tagged_tuple<plotter>(&p)};
+        network.run();
+    }
+    std::cout << "*/\n";
+    std::cout << plot::file("smart_home", p.build());
     return 0;
 }
