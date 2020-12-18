@@ -38,6 +38,23 @@ using round_s = sequence::periodic<
 using rectangle_d = distribution::rect_n<1, 0, 0, 500, 500>;
 constexpr size_t dim = 2;
 
+//! @brief Storage tags and types.
+using storage_t = tuple_store<
+    fail<local_safety_monitor>,     bool,
+    fail<global_safety_monitor>,    bool,
+    col,                            color,
+    size,                           double
+>;
+
+//! @brief Storage tags to be logged with aggregators.
+using aggregator_t = aggregators<
+    fail<local_safety_monitor>,     aggregator::mean<double>,
+    fail<global_safety_monitor>,    aggregator::mean<double>
+>;
+
+//! @brief Plot description.
+using plotter_t = plot::plotter<aggregator_t, plot::time, fail>;
+
 DECLARE_OPTIONS(opt,
 		parallel<true>,
 		synchronised<false>,
@@ -46,19 +63,24 @@ DECLARE_OPTIONS(opt,
 		dimension<dim>,
 		exports<vec<dim>, double, bool, tuple<double,double>>,
 		log_schedule<sequence::periodic_n<1, 0, 10>>,
-		tuple_store<
-		distance_c,         color,
-		size,               double
-		>,
+		storage_t,
+		aggregator_t,
 		spawn_schedule<sequence::multiple_n<DEV_NUM, 0>>,
 		init<x, rectangle_d>,
 		connector<connect::fixed<100>>,
 		size_tag<size>,
-		color_tag<distance_c>
+		color_tag<col>,
+		plot_type<plotter_t>
 		);
 
 int main() {
-  component::interactive_simulator<opt>::net network{common::make_tagged_tuple<epsilon>(0.1)};
-  network.run();
+  plotter_t p;
+  std::cout << "/*\n";
+  {
+    component::interactive_simulator<opt>::net network{common::make_tagged_tuple<plotter>(&p)};
+    network.run();
+  }
+  std::cout << "*/\n";
+  std::cout << plot::file("crowd_safety", p.build());
   return 0;
 }

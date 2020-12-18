@@ -30,16 +30,12 @@ namespace coordination {
     //! @brief Parametric tag for formula failure.
     template <typename T>
     struct fail {};
-    //! @brief Local value of the strong monitor formula.
-    struct local_strong_monitor {};
-    //! @brief Local value of the weak monitor formula.
-    struct local_weak_monitor {};
-    //! @brief Global value of the strong monitor formula.
-    struct global_strong_monitor {};
-    //! @brief Global value of the weak monitor formula.
-    struct global_weak_monitor {};
+    //! @brief Local value of the monitor formula.
+    struct local_safety_monitor {};
+    //! @brief Global value of the monitor formula.
+    struct global_safety_monitor {};
     //! @brief Color representing the distance of the current node.
-    struct distance_c {};
+    struct col {};
     //! @brief Size of the current node.
     struct size {};
   }
@@ -68,6 +64,8 @@ namespace coordination {
   
   //! @brief Main function.
   MAIN() {
+    using namespace tags;
+    
     bool isinc = (node.uid == idinc);
     bool isarea = (node.uid < nareas);
   
@@ -102,9 +100,10 @@ namespace coordination {
     if (dist<inc_radius) {
       safe = false;
     }
+    bool getaway = (dist < inc_radius*1.5);
 
     if (!isarea)
-      if(alert) {
+      if(alert && getaway) {
 	// //OK
 	// auto f = make_tuple(nbr(CALL, dist), nbr(CALL, make_tuple(1.0,2.0)));
 	// auto target = get<1>(max_hood(CALL, f));      
@@ -118,19 +117,18 @@ namespace coordination {
     
     bool my_safety_preserved = logic::my_safety_preserved(CALL, safe, alert);
     bool all_safety_preserved = logic::all_safety_preserved(CALL, safe, alert);
-    
+
+    node.storage(fail<local_safety_monitor>{}) = not my_safety_preserved;
+    node.storage(fail<global_safety_monitor>{}) = not all_safety_preserved;
+
     if (isarea) {
-      node.storage(tags::distance_c{}) = BLUE;      
-      if (isinc) {
-	if (alert)
-	  node.storage(tags::distance_c{}) = YELLOW;
-	else
-	  node.storage(tags::distance_c{}) = BLUE;      
-      }
+      node.storage(col{}) = BLUE;      
+      if (isinc && alert)
+	  node.storage(col{}) = YELLOW;
     } else if (safe)
-      node.storage(tags::distance_c{}) = GREEN;
+      node.storage(col{}) = GREEN;
     else
-      node.storage(tags::distance_c{}) = RED;
+      node.storage(col{}) = RED;
  }
 
 }
