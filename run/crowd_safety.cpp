@@ -44,22 +44,17 @@ DECLARE_OPTIONS(opt,
 		program<coordination::main>,
 		round_schedule<round_s>,
 		dimension<dim>,
-		exports<vec<dim>, double, int>,
+		exports<vec<dim>, double, bool>,
 		log_schedule<sequence::periodic_n<1, 0, 10>>,
 		tuple_store<
-		my_distance,        double,
-		source_diameter,    double,
-		diameter,           double,
 		distance_c,         color,
-		source_diameter_c,  color,
-		diameter_c,         color,
 		size,               double
 		>,
 		spawn_schedule<sequence::multiple_n<DEV_NUM, 0>>,
 		init<x, rectangle_d>,
 		connector<connect::fixed<100>>,
 		size_tag<size>,
-		color_tag<distance_c,source_diameter_c,diameter_c>
+		color_tag<distance_c>
 		);
 
 int main() {
