@@ -10,7 +10,8 @@
 
 #include "lib/data.hpp"
 #include "lib/logic_samples.hpp"
-
+#include "lib/data/vec.hpp"
+#include "lib/coordination/time.hpp"
 
 /**
  * @brief Namespace containing all the objects in the FCPP library.
@@ -37,37 +38,80 @@ namespace coordination {
       struct size {};
     }
 
+  
 
   //! @brief Main function.
   MAIN() {
-    device_t source_id = 50;
-    bool is_source = node.uid == source_id;
+    constexpr int nareas = 12;
+    constexpr int idinc = 6;
+    constexpr int inc_start = 20;
+    constexpr int inc_end = 50;
+    constexpr double inc_radius = 30;
+    
+    // device_t source_id = 50;
+    // bool is_source = node.uid == source_id;
 
-    if (!is_source)
-      rectangle_walk(CALL, make_vec(0,0), make_vec(500,500), 30.5, 1);
+    bool isinc = (node.uid == idinc);
+    bool isarea = (node.uid < nareas);
+  
+    vec<2> low = make_vec(0,0);
+    vec<2> high = make_vec(500,500);
+    
+    if (!isarea)
+      rectangle_walk(CALL, low, high, 30.5, 1); 
 
-    node.storage(tags::size{}) = is_source ? 10 : 5;
-    double dist = abf_distance(CALL, is_source);
-    double sdiam = mp_collection(CALL, dist, dist, 0.0, [](double x, double y){
-        return max(x, y);
-    }, [](double x, int){
-        return x;
-    });
-    double diam = broadcast(CALL, dist, sdiam);
-
-    bool safe = (dist > 20);
+    // vec<2> pos = node.position();
+    // vec<2> target = random_rectangle_target(CALL, low, high);
+    
+    // double dist = norm(pos-target);
+    
+    node.storage(tags::size{}) = isarea ? 10 : 5;
+    if (isinc)
+      node.storage(tags::size{}) = 15;
+    
+    bool safe = true;
     bool alert = false;
     
+    double t = node.current_time();
+    // if (isinc) {
+    //   if (t>50 && t<100)
+    // 	alert = true;
+    // }
+
+    // for now, everyonme knows about alarms
+    if (t>=inc_start && t<=inc_end)
+      alert = true;    
+    
+    double dist = abf_distance(CALL, isinc);
+    if (dist<inc_radius) {
+      safe = false;
+    }
+    
+    double sdiam = mp_collection(CALL, dist, dist, 0.0, [](double x, double y){
+							  return max(x, y);
+							}, [](double x, int){
+							     return x;
+							   });
+    double diam = broadcast(CALL, dist, sdiam);
+
     node.storage(tags::my_distance{}) = dist;
     node.storage(tags::source_diameter{}) = sdiam;
     node.storage(tags::diameter{}) = diam;
-    if (safe)
-      node.storage(tags::distance_c{}) = BLUE;
+    if (isarea) {
+      node.storage(tags::distance_c{}) = BLUE;      
+      if (isinc) {
+	if (alert)
+	  node.storage(tags::distance_c{}) = YELLOW;
+	else
+	  node.storage(tags::distance_c{}) = BLUE;      
+      }
+    } else if (safe)
+      node.storage(tags::distance_c{}) = GREEN;
     //color::hsva(10, 1, 1);
     else
-      node.storage(tags::distance_c{}) = YELLOW;
+      node.storage(tags::distance_c{}) = RED;
     //color::hsva(20, 1, 1);
-      
+    
     node.storage(tags::source_diameter_c{}) = color::hsva(sdiam, 1, 1);
     node.storage(tags::diameter_c{}) = color::hsva(diam, 1, 1);
  }

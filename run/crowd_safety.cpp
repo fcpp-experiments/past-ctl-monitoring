@@ -44,7 +44,7 @@ DECLARE_OPTIONS(opt,
 		program<coordination::main>,
 		round_schedule<round_s>,
 		dimension<dim>,
-		exports<vec<dim>, double>,
+		exports<vec<dim>, double, int>,
 		log_schedule<sequence::periodic_n<1, 0, 10>>,
 		tuple_store<
 		my_distance,        double,
