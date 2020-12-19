@@ -43,11 +43,6 @@ FUN bool no_redundancy(ARGS, bool handling) { CODE
     return AH(CALL, !(handling & EY(CALL, EP(CALL, handling))));
 }
 
-//! @brief Drones don't handle if area handled (second form).
-FUN bool handled_no_redundancy(ARGS, bool handling) { CODE
-    return AS(CALL, !handling, handling & AY(CALL, AH(CALL, !handling)));
-}
-
 
 //! @brief System is active whenever proximity.
 FUN bool active_when_present(ARGS, bool s, bool a, bool p) { CODE

@@ -49,20 +49,32 @@ using export_s = sequence::periodic_n<1, 0, 1>;
 using spawn_s = sequence::multiple_n<drones_num, 0>;
 
 //! @brief Description of the initial position distribution.
-using rectangle_d = distribution::rect_n<1, 0, 0, 0, 1000, 1000, 100>;
+using rectangle_d = distribution::rect_n<1, 0, 0, 0, 1000, 1000, 0>;
 
 //! @brief Storage tags and types.
 using storage_t = tuple_store<
-    fail<handling_monitor>,     bool,
-    fail<redundancy_monitor>,   bool,
-    col,                        color,
-    size,                       double
+    fail<handling_monitor<1>>,      bool,
+    fail<redundancy_monitor<1>>,    bool,
+    fail<handling_monitor<2>>,      bool,
+    fail<redundancy_monitor<2>>,    bool,
+    fail<handling_monitor<3>>,      bool,
+    fail<redundancy_monitor<3>>,    bool,
+    fail<handling_monitor<4>>,      bool,
+    fail<redundancy_monitor<4>>,    bool,
+    col,                            color,
+    size,                           double
 >;
 
 //! @brief Storage tags to be logged with aggregators.
 using aggregator_t = aggregators<
-    fail<handling_monitor>,     aggregator::mean<double>,
-    fail<redundancy_monitor>,   aggregator::mean<double>
+    fail<handling_monitor<1>>,      aggregator::mean<double>,
+    fail<redundancy_monitor<1>>,    aggregator::mean<double>,
+    fail<handling_monitor<2>>,      aggregator::mean<double>,
+    fail<redundancy_monitor<2>>,    aggregator::mean<double>,
+    fail<handling_monitor<3>>,      aggregator::mean<double>,
+    fail<redundancy_monitor<3>>,    aggregator::mean<double>,
+    fail<handling_monitor<4>>,      aggregator::mean<double>,
+    fail<redundancy_monitor<4>>,    aggregator::mean<double>
 >;
 
 //! @brief Plot description.
@@ -74,7 +86,7 @@ DECLARE_OPTIONS(opt,
     synchronised<false>,
     dimension<dim>,
     program<coordination::main>,
-    exports<vec<dim>, bool, hops_t, real_t, tuple<real_t,times_t>>,
+    exports<vec<dim>, tuple<coordination::status,vec<dim>>, bool, real_t, size_t, tuple<real_t,times_t>>,
     retain<metric::retain<2,1>>,
     connector<connect::powered<500, 1, dim>>,
     round_schedule<round_s>,
