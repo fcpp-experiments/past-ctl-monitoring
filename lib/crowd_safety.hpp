@@ -43,27 +43,24 @@ namespace coordination {
   }
 
   
-  //! @brief number of areas (one of which is the incident area)
-  constexpr int nareas = 12;  
+  //! @brief number of areas
+  constexpr int nareas = 5;  
 
   //! @brief ID of the incident area
-  constexpr int idinc = 8;
-
-  //! @brief start time of the incident
-  constexpr int inc_start = 10;
-
-  //! @brief end time of the incident  
-  constexpr int inc_end = 100;  
+  constexpr int idinc = 3;
 
   //! @brief radius of the incident effects
   constexpr double inc_radius = 50;
 
   //! @brief radius of the whole area
-  constexpr double area_radius = 500;
+  constexpr double world_radius = 500;
 
-  //! @brief radius of the incident effects
+  //! @brief speed of the people
   constexpr double max_speed = 1.4;
 
+  //! @brief speed of the info
+  constexpr double info_speed = 40;
+  
   //! @brief radius of the incident effects
   constexpr double period = 1;
   
@@ -75,31 +72,22 @@ namespace coordination {
     bool isarea = (node.uid < nareas);
     node.connector_data() = isarea ? 1 : 0.5;
 
-    times_t panic_time = constant(CALL, node.next_real(0, 1000));
+    times_t panic_time = constant(CALL, node.next_real(0, 300));
     times_t panic_length = constant(CALL, node.next_real(0, 100));
     bool area_panic = isarea and node.current_time() > panic_time and node.current_time() < panic_time+panic_length;
-    // in this case we need:
-    //bool alert = dist < area_radius // automatically adjusts with incidents
 
     vec<2> low = make_vec(0,0);
     vec<2> high = make_vec(500,500);
+    
+    double dist = bis_distance(CALL, area_panic, period, info_speed);
 
-    //bool r = myf(low,high);
-    
-    // vec<2> pos = node.position();
-    // vec<2> target = random_rectangle_target(CALL, low, high);
-    
-    // double dist = norm(pos-target);
-    
-    double t = node.current_time();
-
-    double dist = bis_distance(CALL, isinc, period, 40);
-    bool alert = t >= inc_start && t <= inc_end; // for now, everyone knows (hears) about alarms
     bool safe = (dist > inc_radius);
-    bool getaway = (dist < inc_radius*1.2);
+    bool alert = dist < world_radius; // automatically adjusts with incidents
+
+    bool runaway = (dist < inc_radius*1.2);
 
     if (!isarea) {
-      if (alert && getaway) {
+      if (alert && runaway) {
         auto f = make_tuple(nbr(CALL, dist), node.nbr_vec());
         auto target = get<1>(max_hood(CALL, f));
         follow_target(CALL, target, max_speed, period);
@@ -114,18 +102,16 @@ namespace coordination {
     node.storage(fail<global_safety_monitor>{}) = not all_safety_preserved;
     
     if (isarea)
-      node.storage(tags::size{}) = isinc && alert ? 15 : 10;
+      node.storage(tags::size{}) = area_panic ? 15 : 10;
     else
       node.storage(tags::size{}) = all_safety_preserved ? 5 : my_safety_preserved ? 10 : 15;
 
     if (isarea) {
-      node.storage(col{}) = BLUE;      
-      if (isinc)
-	  node.storage(col{}) = YELLOW;
+      node.storage(col{}) = WHITE;      
     } else {
       double hue;
       if (safe)
-	hue=120+(min(dist,area_radius)-inc_radius)*120/(area_radius-inc_radius);
+	hue=120+(min(dist,world_radius)-inc_radius)*120/(world_radius-inc_radius);
       else
 	hue=dist*60/inc_radius;
       
