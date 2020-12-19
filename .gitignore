@@ -7,3 +7,4 @@ glbuild/
 doc/
 .vagrant/
 .DS_Store
+CMakeLists.txt

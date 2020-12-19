@@ -8,6 +8,8 @@
 #ifndef FCPP_CROWD_SAFETY_H_
 #define FCPP_CROWD_SAFETY_H_
 
+#include <iostream>
+
 #include "lib/data.hpp"
 #include "lib/logic_samples.hpp"
 #include "lib/past_ctl.hpp"
@@ -57,7 +59,7 @@ namespace coordination {
   constexpr double inc_radius = 50;
 
   //! @brief radius of the whole area
-  constexpr double area_radius = 700;
+  constexpr double area_radius = 500;
 
   //! @brief radius of the incident effects
   constexpr double max_speed = 1.4;
@@ -121,17 +123,16 @@ namespace coordination {
       if (isinc)
 	  node.storage(col{}) = YELLOW;
     } else {
+      double hue;
       if (safe)
-	hue=120+(dist-inc_radius)*120/(area_radius-inc_radius);
+	hue=120+(min(dist,area_radius)-inc_radius)*120/(area_radius-inc_radius);
       else
 	hue=dist*60/inc_radius;
       
       node.storage(col{}) = color::hsva(hue,1,1);
-      std::cout << node.uid << " " << dist << " " << hue << std::endl;
     }
   }
-  
-}
+  }
 }
 
 #endif // FCPP_CROWD_SAFETY_H_
