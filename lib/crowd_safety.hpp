@@ -57,7 +57,7 @@ namespace coordination {
   constexpr double inc_radius = 50;
 
   //! @brief radius of the whole area
-  constexpr double area_radius = 700;
+  constexpr double area_radius = 500;
 
   //! @brief radius of the incident effects
   constexpr double max_speed = 1.4;
@@ -121,7 +121,7 @@ namespace coordination {
       if (isinc)
 	  node.storage(col{}) = YELLOW;
     } else if (safe)
-      node.storage(col{}) = color::hsva(120+(dist-inc_radius)*120/(area_radius-inc_radius),1,1);
+      node.storage(col{}) = color::hsva(120+(min(dist,area_radius)-inc_radius)*120/(area_radius-inc_radius),1,1);
     ///(area_radius-inc_radius)*0.01
     //node.storage(col{}) = color::hsva(120,1,1);    
     else
