@@ -67,7 +67,7 @@ DECLARE_OPTIONS(opt,
 		aggregator_t,
 		spawn_schedule<sequence::multiple_n<DEV_NUM, 0>>,
 		init<x, rectangle_d>,
-		connector<connect::fixed<100>>,
+		connector<connect::powered<200>>,
 		size_tag<size>,
 		color_tag<col>,
 		plot_type<plotter_t>

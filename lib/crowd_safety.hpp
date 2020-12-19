@@ -56,8 +56,11 @@ namespace coordination {
   //! @brief radius of the incident effects
   constexpr double inc_radius = 30;
 
+  //! @brief radius of the whole area
+  constexpr double area_radius = 700;
+
   //! @brief radius of the incident effects
-  constexpr double max_speed = 30;
+  constexpr double max_speed = 1.4;
 
   //! @brief radius of the incident effects
   constexpr double period = 1;
@@ -68,7 +71,14 @@ namespace coordination {
     
     bool isinc = (node.uid == idinc);
     bool isarea = (node.uid < nareas);
-  
+    node.connector_data() = isarea ? 1 : 0.5;
+
+    times_t panic_time = constant(CALL, node.next_real(0, 1000));
+    times_t panic_length = constant(CALL, node.next_real(0, 100));
+    bool area_panic = isarea and node.current_time() > panic_time and node.current_time() < panic_time+panic_length;
+    // in this case we need:
+    //bool alert = dist < area_radius // automatically adjusts with incidents
+
     vec<2> low = make_vec(0,0);
     vec<2> high = make_vec(500,500);
 
@@ -79,56 +89,41 @@ namespace coordination {
     
     // double dist = norm(pos-target);
     
-    node.storage(tags::size{}) = isarea ? 10 : 5;
-    if (isinc)
-      node.storage(tags::size{}) = 15;
-    
-    bool safe = true;
-    bool alert = false;
-    
     double t = node.current_time();
-    // if (isinc) {
-    //   if (t>50 && t<100)
-    // 	alert = true;
-    // }
 
-    // for now, everyone knows (hears) about alarms
-    if (t>=inc_start && t<=inc_end)
-      alert = true;    
-    
-    double dist = bis_distance(CALL, isinc, period, max_speed);
-    if (dist<inc_radius) {
-      safe = false;
-    }
+    double dist = bis_distance(CALL, isinc, period, 40);
+    bool alert = t >= inc_start && t <= inc_end; // for now, everyone knows (hears) about alarms
+    bool safe = dist < inc_radius;
     bool getaway = (dist < inc_radius*1.5);
 
-    if (!isarea)
-      if(alert && getaway) {
-	// //OK
-	// auto f = make_tuple(nbr(CALL, dist), nbr(CALL, make_tuple(1.0,2.0)));
-	// auto target = get<1>(max_hood(CALL, f));      
-	//KO
-	auto f = make_tuple(nbr(CALL, dist), node.nbr_vec());
-	auto target = get<1>(max_hood(CALL, f));
-      
-	follow_target(CALL, target, max_speed, period);			     
+    if (!isarea) {
+      if (alert && getaway) {
+        auto f = make_tuple(nbr(CALL, dist), node.nbr_vec());
+        auto target = get<1>(max_hood(CALL, f));
+        follow_target(CALL, target, max_speed, period);
       } else
-	rectangle_walk(CALL, low, high, max_speed, period);
+        rectangle_walk(CALL, low, high, max_speed, period);
+    }
     
     bool my_safety_preserved = logic::my_safety_preserved(CALL, safe, alert);
     bool all_safety_preserved = logic::all_safety_preserved(CALL, safe, alert);
 
     node.storage(fail<local_safety_monitor>{}) = not my_safety_preserved;
     node.storage(fail<global_safety_monitor>{}) = not all_safety_preserved;
+    
+    if (isarea)
+      node.storage(tags::size{}) = isinc && alert ? 15 : 10;
+    else
+      node.storage(tags::size{}) = all_safety_preserved ? 5 : my_safety_preserved ? 10 : 15;
 
     if (isarea) {
       node.storage(col{}) = BLUE;      
       if (isinc && alert)
 	  node.storage(col{}) = YELLOW;
     } else if (safe)
-      node.storage(col{}) = GREEN;
+      node.storage(col{}) = color::hsva(120+(dist-inc_radius)*120/(area_radius-inc_radius),0,1);
     else
-      node.storage(col{}) = RED;
+      node.storage(col{}) = color::hsva(dist*60/inc_radius,0,1);
  }
 
 }

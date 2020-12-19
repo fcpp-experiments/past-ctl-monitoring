@@ -60,11 +60,12 @@ MAIN() {
     using namespace tags;
 
     bool tower = node.uid < 4;
+    // TODO: controllare che torri si accorgano di essere state servite
     bool request = tower and node.current_time() > constant(CALL, node.next_real(0, 200));
     bool handling = false;
     bool resting = node.position()[2] < 1;
     node.connector_data() = tower ? 1 : 0.5;
-    hops_t req_dist = abf_hops(CALL, request);
+    hops_t req_dist = bis_distance(CALL, request, 1, 80);
 
     vec<3> target = old(CALL, node.position(), [&](vec<3> target){
         bool free = distance(node.position(), target) < epsilon_dist and not tower;
