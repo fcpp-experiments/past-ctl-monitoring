@@ -68,7 +68,6 @@ namespace coordination {
   MAIN() {
     using namespace tags;
     
-    bool isinc = (node.uid == idinc);
     bool isarea = (node.uid < nareas);
     node.connector_data() = isarea ? 1 : 0.5;
 
@@ -107,7 +106,7 @@ namespace coordination {
       node.storage(tags::size{}) = all_safety_preserved ? 5 : my_safety_preserved ? 10 : 15;
 
     if (isarea) {
-      node.storage(col{}) = WHITE;      
+      node.storage(col{}) = area_panic ? FIRE_BRICK : BLACK;
     } else {
       double hue;
       if (safe)
