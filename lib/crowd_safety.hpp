@@ -120,15 +120,17 @@ namespace coordination {
       node.storage(col{}) = BLUE;      
       if (isinc)
 	  node.storage(col{}) = YELLOW;
-    } else if (safe)
-      node.storage(col{}) = color::hsva(120+(dist-inc_radius)*120/(area_radius-inc_radius),1,1);
-    ///(area_radius-inc_radius)*0.01
-    //node.storage(col{}) = color::hsva(120,1,1);    
-    else
-      //node.storage(col{}) = RED;            
-      node.storage(col{}) = color::hsva(dist*60/inc_radius,1,1);
- }
-
+    } else {
+      if (safe)
+	hue=120+(dist-inc_radius)*120/(area_radius-inc_radius);
+      else
+	hue=dist*60/inc_radius;
+      
+      node.storage(col{}) = color::hsva(hue,1,1);
+      std::cout << node.uid << " " << dist << " " << hue << std::endl;
+    }
+  }
+  
 }
 }
 
