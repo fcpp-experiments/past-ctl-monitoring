@@ -27,7 +27,7 @@ using namespace fcpp;
 using namespace component::tags;
 using namespace coordination::tags;
 
-constexpr int DEV_NUM=200;
+constexpr int DEV_NUM=100;
 constexpr int FREQ=1;
 
 using round_s = sequence::periodic<

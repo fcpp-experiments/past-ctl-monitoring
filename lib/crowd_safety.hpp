@@ -51,10 +51,10 @@ namespace coordination {
   constexpr int inc_start = 10;
 
   //! @brief end time of the incident  
-  constexpr int inc_end = 30;  
+  constexpr int inc_end = 100;  
 
   //! @brief radius of the incident effects
-  constexpr double inc_radius = 30;
+  constexpr double inc_radius = 50;
 
   //! @brief radius of the whole area
   constexpr double area_radius = 700;
@@ -93,8 +93,8 @@ namespace coordination {
 
     double dist = bis_distance(CALL, isinc, period, 40);
     bool alert = t >= inc_start && t <= inc_end; // for now, everyone knows (hears) about alarms
-    bool safe = dist < inc_radius;
-    bool getaway = (dist < inc_radius*1.5);
+    bool safe = (dist > inc_radius);
+    bool getaway = (dist < inc_radius*1.2);
 
     if (!isarea) {
       if (alert && getaway) {
@@ -118,12 +118,15 @@ namespace coordination {
 
     if (isarea) {
       node.storage(col{}) = BLUE;      
-      if (isinc && alert)
+      if (isinc)
 	  node.storage(col{}) = YELLOW;
     } else if (safe)
-      node.storage(col{}) = color::hsva(120+(dist-inc_radius)*120/(area_radius-inc_radius),0,1);
+      node.storage(col{}) = color::hsva(120+(dist-inc_radius)*120/(area_radius-inc_radius),1,1);
+    ///(area_radius-inc_radius)*0.01
+    //node.storage(col{}) = color::hsva(120,1,1);    
     else
-      node.storage(col{}) = color::hsva(dist*60/inc_radius,0,1);
+      //node.storage(col{}) = RED;            
+      node.storage(col{}) = color::hsva(dist*60/inc_radius,1,1);
  }
 
 }
