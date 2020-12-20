@@ -52,6 +52,9 @@ namespace coordination {
   //! @brief radius of the incident effects
   constexpr double inc_radius = 50;
 
+  //! @brief radius of the alert effects
+  constexpr double alert_radius = 100;
+
   //! @brief radius of the whole area
   constexpr double world_radius = 500;
 
@@ -80,8 +83,8 @@ namespace coordination {
     
     double dist = bis_distance(CALL, area_panic, period, info_speed);
 
-    bool safe = (dist > inc_radius);
-    bool alert = dist < world_radius; // automatically adjusts with incidents
+    bool safe = (dist > inc_radius); // people are safe beyond this radius
+    bool alert = (dist < alert_radius); // people notice alerts within this radius
 
     bool runaway = (dist < inc_radius*1.2);
 
