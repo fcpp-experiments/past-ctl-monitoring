@@ -43,8 +43,8 @@ The installation instructions above build three demo scenarios in the ```build``
 To launch a scenario, go to the ```build``` directory and run its executable.
 
 The scenario will open a window displaying the simulation. You can interact with the folowwing keys:
-- ```P``` stop/resume
+- ```P``` to stop/resume
 - ```O```/```I``` to speed-up/slow-down simulation time
 - ```Esc``` to exit the simulation
-- ```shift```+```Q```,```W```,```E```,```A```,```S```,```D```: move the simulation area along orthogonal axes
-
+- ```shift```+```Q```,```W```,```E```,```A```,```S```,```D``` to move the simulation area along orthogonal axes
+- ```right-click```+```mouse drag``` to rotate the camera
