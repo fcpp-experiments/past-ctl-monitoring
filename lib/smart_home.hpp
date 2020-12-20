@@ -45,25 +45,25 @@ namespace tags {
  * Room rows are -1 and +1; row zero is the corridor.
  * The offset varies from -3 to +2.
  */
-FUN vec<2> room_door(ARGS, int row, int column, int offset) { CODE
-    return make_vec(6*column+3, (1.5 + 0.25*offset)*row);
+FUN vec<3> room_door(ARGS, int row, int column, int offset) { CODE
+    return make_vec(6*column+3, (1.5 + 0.25*offset)*row, 0);
 }
 
 //! @brief Get the room index from the position.
-FUN tuple<int,int> get_room(ARGS, vec<2> pos) { CODE
+FUN tuple<int,int> get_room(ARGS, vec<3> pos) { CODE
     if (-1 < pos[1] and pos[1] < 1) return {0, 0}; // corridor
     return {pos[1] > 0 ? 1 : -1, int(pos[0] / 6)};
 }
 
 //! @brief Generates a target in a given row and column.
-FUN vec<2> random_room_target(ARGS, int row, int column) { CODE
+FUN vec<3> random_room_target(ARGS, int row, int column) { CODE
     if (row == 0) {
         column = node.next_int(0, 3);
         row = node.next_int(0, 1);
         if (row == 0) row = -1;
         return room_door(CALL, row, column, -1);
     }
-    return random_rectangle_target(CALL, make_vec(6*column+1, 2.5*row), make_vec(6*column+5, 6.5*row));
+    return random_rectangle_target(CALL, make_vec(6*column+1, 2.5*row, 0), make_vec(6*column+5, 6.5*row, 0));
 }
 
 //! @brief Random walking within a 24x3m central corridor with 8 adjacent 6x6m rooms.
@@ -71,10 +71,10 @@ FUN void building_walk(ARGS, real_t max_v, real_t period) { CODE
     if (node.uid < 12) {
         int row = node.uid / 4;
         int col = node.uid % 4;
-        node.position() = make_vec(6*col+3, 5*row-5);
+        node.position() = make_vec(6*col+3, 5*row-5, 2);
         return;
     }
-    old(CALL, node.position(), [&](vec<2> t){
+    old(CALL, node.position(), [&](vec<3> t){
         real_t dist = follow_target(CALL, t, max_v, period);
         if (dist < max_v * period) { // maybe change target
             tuple<int,int> room = get_room(CALL, t);

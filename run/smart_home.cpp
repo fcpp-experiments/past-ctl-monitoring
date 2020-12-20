@@ -36,7 +36,7 @@ constexpr size_t lights_num = 12;
 constexpr size_t people_num = 12;
 
 //! @brief Dimensionality of the space.
-constexpr size_t dim = 2;
+constexpr size_t dim = 3;
 
 
 //! @brief Description of the round schedule.
@@ -52,7 +52,7 @@ using export_s = sequence::periodic_n<1, 0, 1>;
 using spawn_s = sequence::multiple_n<lights_num + people_num, 0>;
 
 //! @brief Description of the initial position distribution.
-using rectangle_d = distribution::rect_n<1, 0, -7, 24, 7>;
+using rectangle_d = distribution::rect_n<1, 0, -7, 0, 24, 7, 0>;
 
 //! @brief Storage tags and types.
 using storage_t = tuple_store<
@@ -83,7 +83,7 @@ DECLARE_OPTIONS(opt,
     program<coordination::main>,
     exports<vec<dim>, bool>,
     retain<metric::retain<2,1>>,
-    connector<connect::fixed<3>>,
+    connector<connect::fixed<3, 1, dim>>,
     round_schedule<round_s>,
     log_schedule<export_s>,
     spawn_schedule<spawn_s>,
