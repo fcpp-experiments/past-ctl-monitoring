@@ -9,7 +9,6 @@ fi
 platform=$1
 if [ "$platform" == windows ]; then
     flag=MinGW
-fi
 elif [ "$platform" == unix ]; then
     flag=Unix
 else
