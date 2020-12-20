@@ -1,59 +1,50 @@
-# FCPP Sample Project - Comparison of Collection Algorithms
+# Past-CTL Monitoring in Field Calculus
 
-Sample project provided with the FCPP distribution, designed to help setup of FCPP-based projects.
+This repository contains the implementation of a monitoring system for past-CTL logic formulas based on Field Calculus. It also contains three graphical demo scenarios where past-CTL formulas are monitored during the simulation of distributed systems.
 
-The project is a translation in FCPP of the experiments in [this repository](https://bitbucket.org/Harniver/aamas19-summarising), presented at [AAMAS 2019 - 18th International Conference on Autonomous Agents and Multiagent Systems](http://aamas2019.encs.concordia.ca), which compare the performance of existing self-stabilising collection algorithms.
+## Installation
 
-This FCPP translation has been presented at [ACSOS 2020 - 1st IEEE International Conference on Autonomic Computing and Self-Organizing Systems](https://conf.researchr.org/home/acsos-2020) through [this paper](http://giorgio.audrito.info/static/fcpp.pdf). For any issues with reproducing the experiments, please contact [Giorgio Audrito](mailto:giorgio.audrito@unito.it).
+### Windows
 
-## Getting Started
+Pre-requisites:
+- MinGW-w64 8.1.0
+- CMake 3.9 (or higher)
 
-### References
-
-- FCPP main website: [https://fcpp.github.io](https://fcpp.github.io).
-- FCPP documentation: [http://fcpp-doc.surge.sh](http://fcpp-doc.surge.sh).
-- FCPP sources: [https://github.com/fcpp/fcpp](https://github.com/fcpp/fcpp).
-
-### Vagrant
-
-Download Vagrant from [https://www.vagrantup.com](https://www.vagrantup.com), then type the following commands in a terminal:
+Clone this repository and go into its main directory. Type the following commands:
 ```
-vagrant up
-vagrant ssh
-cd fcpp
-./make.sh run -O runner
-```
-Then you should get output about building the experiments and running them (in the Vagrant virtual machine). After that you can exit and stop the virtual machine through:
-```
-exit
-vagrant halt
+- cmake -S ./ -B ./build -G "MinGW Makefiles"
+- cmake --build ./build/
 ```
 
-### Docker
+### Linux
 
-Download Docker from [https://www.docker.com](https://www.docker.com), then download the Docker container from GitHub by typing the following command in a terminal:
+Pre-requisites:
+- xorg-dev package (X11)
+- CMake 3.9 (or higher)
+
+To install the X11 package in Ubuntu, type the following command:
 ```
-docker pull docker.pkg.github.com/fcpp/fcpp/container:1.0
-```
-Alternatively, you can build the container yourself with the following command:
-```
-docker build -t docker.pkg.github.com/fcpp/fcpp/container:1.0 .
-```
-Once you have the Docker container locally available, type the following commands:
-```
-docker run -it --volume $PWD:/fcpp --workdir /fcpp docker.pkg.github.com/fcpp/fcpp/container:1.0 bash
-./make.sh run -O runner
-```
-Then you should get output about building the experiments and running them (in the Docker container). After that you can exit and stop the container through:
-```
-exit
+sudo apt-get  install xorg-dev
 ```
 
-### Custom Build
+Clone this repository and go into its main directory. Type the following commands:
+```
+- cmake -S ./ -B ./build -G "Unix Makefiles"
+- cmake --build ./build/
+```
 
-In order to get started on your machine you need the following installed:
+## Demo Scenarios
 
-- [Bazel](https://bazel.build) (tested with version 2.1.0)
-- [GCC](https://gcc.gnu.org) (tested with version 9.3.0)
+The installation instructions above build three demo scenarios in the ```build``` directory:
+- Crowd Safety (executable ```crowd_safety```)
+- Smart Home (executable ```smart_home```)
+- Drones Recognition (executable ```drones_recognition```)
 
-Once you have them installed, you should be able to run `./make.sh gcc run -O runner`, getting output about building the experiments and running them.
+To launch a scenario, go to the ```build``` directory and run its executable.
+
+The scenario will open a window displaying the simulation. You can interact with the folowwing keys:
+- ```P``` stop/resume
+- ```O```/```I``` to speed-up/slow-down simulation time
+- ```Esc``` to exit the simulation
+- ```shift```+```Q```,```W```,```E```,```A```,```S```,```D```: move the simulation area along orthogonal axes
+
