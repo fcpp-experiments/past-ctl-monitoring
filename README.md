@@ -69,3 +69,4 @@ The scenario will open a window displaying the simulation. You can interact with
 - ```Esc``` to exit the simulation
 - ```Q```,```W```,```E```,```A```,```S```,```D``` to move the simulation area along orthogonal axes
 - ```right-click```+```mouse drag``` to rotate the camera
+-```left-shift``` for precision camera movements
