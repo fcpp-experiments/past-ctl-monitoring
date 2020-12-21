@@ -11,8 +11,11 @@ Pre-requisites:
 - [CMake 3.9](https://cmake.org) (or higher)
 - [Asymptote](http://asymptote.sourceforge.io) (for building the plots)
 
-Clone this repository and go into its main directory. Type the following command:
+We assume that commands are issued through [Git Bash](https://gitforwindows.org) or analogous tool.
+Clone this repository, then go into its main directory to launch the `make.sh` script:
 ```
+> git clone https://github.com/Harniver/past-ctl-monitoring.git
+> cd past-ctl-monitoring
 > ./make.sh windows [scenario]
 ```
 where `[scenario]` is one of the three described below. You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
@@ -29,8 +32,10 @@ To install these packages in Ubuntu, type the following command:
 sudo apt-get install xorg-dev cmake asymptote
 ```
 
-Clone this repository and go into its main directory. Type the following command:
+Clone this repository, then go into its main directory to launch the `make.sh` script:
 ```
+> git clone https://github.com/Harniver/past-ctl-monitoring.git
+> cd past-ctl-monitoring
 > ./make.sh unix [scenario]
 ```
 where `[scenario]` is one of the three described below. You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
@@ -48,15 +53,17 @@ xcode-select --install
 brew install cmake
 ```
 
-Clone this repository and go into its main directory. Type the following command:
+Clone this repository, then go into its main directory to launch the `make.sh` script:
 ```
+> git clone https://github.com/Harniver/past-ctl-monitoring.git
+> cd past-ctl-monitoring
 > ./make.sh unix [scenario]
 ```
 where `[scenario]` is one of the three described below. You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
 
 ## Demo Scenarios
 
-The installation instructions above build (and runs) three demo scenarios in the `build/` directory:
+The installation instructions above build three demo scenarios in the `build/` directory:
 - Crowd Safety (executable `crowd_safety`)
 - Drones Recognition (executable `drones_recognition`)
 - Smart Home (executable `smart_home`)
