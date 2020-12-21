@@ -71,9 +71,11 @@ The installation instructions above build three demo scenarios in the `build/` d
 To launch a scenario manually, go to the `build` directory and run its executable.
 
 The scenario will open a window displaying the simulation. You can interact with the following keys:
+- ```Esc``` to exit the simulation
 - ```P``` to stop/resume
 - ```O```/```I``` to speed-up/slow-down simulation time
-- ```Esc``` to exit the simulation
+- ```L``` to show/hide connection links between nodes
 - ```Q```,```W```,```E```,```A```,```S```,```D``` to move the simulation area along orthogonal axes
 - ```right-click```+```mouse drag``` to rotate the camera
+- ```mouse scroll``` for zooming in and out
 -```left-shift``` for precision camera movements
