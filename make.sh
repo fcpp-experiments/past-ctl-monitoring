@@ -16,6 +16,7 @@ else
     echo -e "    \033[1mwindows unix\033[0m"
     exit 1
 fi
+shift 1
 
 git submodule init
 git submodule update

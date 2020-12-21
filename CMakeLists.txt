@@ -10,16 +10,6 @@ include(GNUInstallDirs)
 # adding fcpp
 add_subdirectory(./fcpp/src/)
 
-# adding headers
-add_library(past_ctl SHARED
-    lib/crowd_safety.cpp
-    lib/drones_recognition.cpp
-    lib/logic_samples.cpp
-    lib/past_ctl.cpp
-    lib/smart_home.cpp
-)
-target_include_directories(past_ctl PRIVATE ./ ./fcpp/src/)
-
 
 # project name, version and description
 project(crowd_safety
@@ -44,7 +34,6 @@ target_include_directories(crowd_safety PRIVATE ./
 
 # link libraries
 target_link_libraries(crowd_safety PRIVATE fcpp
-                                           past_ctl
                                            glm
                                            glfw
                                            stb_image
@@ -100,7 +89,6 @@ target_include_directories(drones_recognition PRIVATE ./
 
 # link libraries
 target_link_libraries(drones_recognition PRIVATE fcpp
-                                                 past_ctl
                                                  glm
                                                  glfw
                                                  stb_image
@@ -156,11 +144,10 @@ target_include_directories(smart_home PRIVATE ./
 
 # link libraries
 target_link_libraries(smart_home PRIVATE fcpp
-                                     past_ctl
-                                     glm
-                                     glfw
-                                     stb_image
-                                     freetype)
+                                         glm
+                                         glfw
+                                         stb_image
+                                         freetype)
 
 #copying shaders into build
 add_custom_command(TARGET smart_home PRE_BUILD
