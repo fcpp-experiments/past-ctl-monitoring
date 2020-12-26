@@ -20,10 +20,10 @@ shift 1
 
 git submodule init
 git submodule update
-cmake -S ./ -B ./build -G "$flag Makefiles" -Wno-dev
-cmake --build ./build/
+cmake -S ./ -B ./bin -G "$flag Makefiles" -Wno-dev
+cmake --build ./bin/
 for target in "$@"; do
-    cd build
+    cd bin
     ./$target | tee ../plot/$target.asy
     cd ../plot
 #    sed -i "" -E "s| \(mean-mean\)||g" $target.asy

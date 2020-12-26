@@ -4,14 +4,24 @@ This repository contains the implementation of a monitoring system for past-CTL 
 
 ## Installation
 
+### Virtual Machines
+
+The simulations in this repository have an OpenGL-based graphical interface. Common Virtual Machine software (e.g., VirtualBox) has faulty support for OpenGL, hence running the experiments in a VM is not supported. Based on preliminary testing, the simulations may not start on some VMs, while starting on others with graphical distortions (e.g., limited colors).
+
 ### Windows
 
 Pre-requisites:
-- [MinGW-w64 8.1.0](http://mingw-w64.org)
+- [Git Bash](https://gitforwindows.org) (for issuing unix-style commands)
+- [MinGW-w64 builds 8.1.0](http://mingw-w64.org/doku.php/download/mingw-builds)
 - [CMake 3.9](https://cmake.org) (or higher)
 - [Asymptote](http://asymptote.sourceforge.io) (for building the plots)
 
-We assume that commands are issued through [Git Bash](https://gitforwindows.org) or analogous tool.
+After installing MinGW, you need to add its path to the environment variable `PATH`. The default path should be:
+```
+C:\Program Files (x86)\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin
+```
+but the actual path may vary depending on your installation.
+
 Clone this repository, then go into its main directory to launch the `make.sh` script:
 ```
 > git clone https://github.com/Harniver/past-ctl-monitoring.git
@@ -23,13 +33,14 @@ where `[scenario]` is one of the three described below. You should see output ab
 ### Linux
 
 Pre-requisites:
-- xorg-dev package (X11)
+- Xorg-dev package (X11)
+- G++ 9 (or higher)
 - CMake 3.9 (or higher)
 - Asymptote (for building the plots)
 
 To install these packages in Ubuntu, type the following command:
 ```
-sudo apt-get install xorg-dev cmake asymptote
+sudo apt-get install xorg-dev g++ cmake asymptote
 ```
 
 Clone this repository, then go into its main directory to launch the `make.sh` script:
@@ -47,10 +58,10 @@ Pre-requisites:
 - CMake 3.9 (or higher)
 - [Asymptote](http://asymptote.sourceforge.io) (for building the plots)
 
-To install the first two tools, assuming you have [brew](https://brew.sh) installed, type the following commands:
+To install them, assuming you have the [brew](https://brew.sh) package manager, type the following commands:
 ```
 xcode-select --install
-brew install cmake
+brew install cmake asymmptote
 ```
 
 Clone this repository, then go into its main directory to launch the `make.sh` script:
@@ -63,12 +74,12 @@ where `[scenario]` is one of the three described below. You should see output ab
 
 ## Demo Scenarios
 
-The installation instructions above build three demo scenarios in the `build/` directory:
+The installation instructions above build three demo scenarios in the `bin/` directory:
 - Crowd Safety (executable `crowd_safety`)
 - Drones Recognition (executable `drones_recognition`)
 - Smart Home (executable `smart_home`)
 
-To launch a scenario manually, go to the `build` directory and run its executable.
+To launch a scenario manually, go to the `bin` directory and run its executable.
 
 The scenario will open a window displaying the simulation. You can interact with the following keys:
 - ```Esc``` to exit the simulation
