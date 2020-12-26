@@ -22,6 +22,9 @@ git submodule init
 git submodule update
 cmake -S ./ -B ./bin -G "$flag Makefiles" -Wno-dev
 cmake --build ./bin/
+if [ "$platform" == windows ]; then
+    cp bin/fcpp/src/libfcpp.dll bin/
+fi
 for target in "$@"; do
     cd bin
     ./$target | tee ../plot/$target.asy

@@ -5,10 +5,13 @@ cmake_minimum_required(VERSION 3.9)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-include(GNUInstallDirs)
-
 # adding fcpp
+if(MINGW)
+    option(MINGW_STDTHREADS_GENERATE_STDHEADERS "" ON)
+endif(MINGW)
 add_subdirectory(./fcpp/src/)
+
+include(GNUInstallDirs)
 
 
 # project name, version and description
@@ -51,13 +54,6 @@ add_custom_command(TARGET crowd_safety PRE_BUILD
 
 #target compile options
 target_compile_options(crowd_safety PUBLIC "-DFCPP_CONFIGURATION=FCPP_CONFIGURATION_DEPENDENT")
-
-# MinGW support to C++ threads
-if(MINGW)
-    target_include_directories(crowd_safety PRIVATE ./fcpp/src/external/mingw-std-threads-master/)
-    target_link_libraries(crowd_safety PRIVATE mingw_stdthreads)
-    option(MINGW_STDTHREADS_GENERATE_STDHEADERS "" ON)
-endif(MINGW)
 
 # defining install rules
 install(TARGETS crowd_safety
@@ -107,13 +103,6 @@ add_custom_command(TARGET drones_recognition PRE_BUILD
 #target compile options
 target_compile_options(drones_recognition PUBLIC "-DFCPP_CONFIGURATION=FCPP_CONFIGURATION_DEPENDENT")
 
-# MinGW support to C++ threads
-if(MINGW)
-    target_include_directories(drones_recognition PRIVATE ./fcpp/src/external/mingw-std-threads-master/)
-    target_link_libraries(drones_recognition PRIVATE mingw_stdthreads)
-    option(MINGW_STDTHREADS_GENERATE_STDHEADERS "" ON)
-endif(MINGW)
-
 # defining install rules
 install(TARGETS drones_recognition
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -161,13 +150,6 @@ add_custom_command(TARGET smart_home PRE_BUILD
 
 #target compile options
 target_compile_options(smart_home PUBLIC "-DFCPP_CONFIGURATION=FCPP_CONFIGURATION_DEPENDENT")
-
-# MinGW support to C++ threads
-if(MINGW)
-    target_include_directories(smart_home PRIVATE ./fcpp/src/external/mingw-std-threads-master/)
-    target_link_libraries(smart_home PRIVATE mingw_stdthreads)
-    option(MINGW_STDTHREADS_GENERATE_STDHEADERS "" ON)
-endif(MINGW)
 
 # defining install rules
 install(TARGETS smart_home
