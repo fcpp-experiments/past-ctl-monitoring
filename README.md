@@ -61,7 +61,7 @@ Pre-requisites:
 To install them, assuming you have the [brew](https://brew.sh) package manager, type the following commands:
 ```
 xcode-select --install
-brew install cmake asymmptote
+brew install cmake asymptote
 ```
 
 Clone this repository, then go into its main directory to launch the `make.sh` script:
