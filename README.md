@@ -80,14 +80,12 @@ The installation instructions above build three demo scenarios in the `bin/` dir
 - Drones Recognition (executable `drones_recognition`)
 - Smart Home (executable `smart_home`)
 
-To launch a scenario manually, go to the `bin` directory and run its executable.
-
-The scenario will open a window displaying the simulation. You can interact with the following keys:
-- ```Esc``` to exit the simulation
-- ```P``` to stop/resume
-- ```O```/```I``` to speed-up/slow-down simulation time
-- ```L``` to show/hide connection links between nodes
-- ```Q```,```W```,```E```,```A```,```S```,```D``` to move the simulation area along orthogonal axes
-- ```right-click```+```mouse drag``` to rotate the camera
-- ```mouse scroll``` for zooming in and out
--```left-shift``` for precision camera movements
+To launch a scenario manually, move to the `bin` directory and run its executable. This will open a window displaying the simulation scenario, initially still: you can start running the simulation by pressing `P` (current simulated time is displayed in the bottom-left corner). While the simulation is running, network statistics will be periodically printed in the console, and aggregated in form of an Asymptote plot at simulation end. You can interact with the simulation through the following keys:
+- `Esc` to end the simulation
+- `P` to stop/resume
+- `O`/`I` to speed-up/slow-down simulated time
+- `L` to show/hide connection links between nodes
+- `Q`,`W`,`E`,`A`,`S`,`D` to move the simulation area along orthogonal axes
+- `right-click`+`mouse drag` to rotate the camera
+- `mouse scroll` for zooming in and out
+-`left-shift` added to the commands above for precision control
