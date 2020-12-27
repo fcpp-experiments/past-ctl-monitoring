@@ -28,7 +28,7 @@ Clone this repository, then go into its main directory to launch the `make.sh` s
 > cd past-ctl-monitoring
 > ./make.sh windows [scenario]
 ```
-where `[scenario]` is one of the three described below (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
+where `[scenario]` is one of the three described in the next section (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
 
 ### Linux
 
@@ -49,7 +49,7 @@ Clone this repository, then go into its main directory to launch the `make.sh` s
 > cd past-ctl-monitoring
 > ./make.sh unix [scenario]
 ```
-where `[scenario]` is one of the three described below (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
+where `[scenario]` is one of the three described in the next section (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
 
 ### MacOS
 
@@ -70,7 +70,7 @@ Clone this repository, then go into its main directory to launch the `make.sh` s
 > cd past-ctl-monitoring
 > ./make.sh unix [scenario]
 ```
-where `[scenario]` is one of the three described below (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
+where `[scenario]` is one of the three described in the next section (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
 
 ## Demo Scenarios
 

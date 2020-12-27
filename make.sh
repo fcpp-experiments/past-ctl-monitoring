@@ -13,7 +13,7 @@ if [ "$platform" == windows ]; then
 elif [ "$platform" == unix ]; then
     flag=Unix
 else
-    echo -e "\033[4mUnrecognized platform. Available platforms are:\033[0m"
+    echo -e "\033[4mUnrecognized platform \"$platform\". Available platforms are:\033[0m"
     echo -e "    \033[1mwindows unix\033[0m"
     exit 1
 fi
@@ -21,6 +21,10 @@ shift 1
 
 function make_target {
     target=$1
+    if [ ! -f "run/$target.cpp" ]; then
+        echo -e "\033[4mUnrecognized target \"$target\".\033[0m"
+        exit 1
+    fi
     cd bin
     ./$target | tee ../plot/$target.asy
     cd ../plot
