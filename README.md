@@ -16,8 +16,7 @@ Pre-requisites:
 - [CMake 3.9](https://cmake.org) (or higher)
 - [Asymptote](http://asymptote.sourceforge.io) (for building the plots)
 
-During MinGW installation, make sure you select "posix" threads (should be the default) and not "win32" threads.
-After installing MinGW, you need to add its path to the environment variable `PATH`. The default path should be:
+During MinGW installation, make sure you select "posix" threads (should be the default) and not "win32" threads. After installing MinGW, you need to add its path to the environment variable `PATH`. The default path should be:
 ```
 C:\Program Files (x86)\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin
 ```
@@ -29,7 +28,7 @@ Clone this repository, then go into its main directory to launch the `make.sh` s
 > cd past-ctl-monitoring
 > ./make.sh windows [scenario]
 ```
-where `[scenario]` is one of the three described below. You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
+where `[scenario]` is one of the three described below (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
 
 ### Linux
 
@@ -50,7 +49,7 @@ Clone this repository, then go into its main directory to launch the `make.sh` s
 > cd past-ctl-monitoring
 > ./make.sh unix [scenario]
 ```
-where `[scenario]` is one of the three described below. You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
+where `[scenario]` is one of the three described below (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
 
 ### MacOS
 
@@ -71,7 +70,7 @@ Clone this repository, then go into its main directory to launch the `make.sh` s
 > cd past-ctl-monitoring
 > ./make.sh unix [scenario]
 ```
-where `[scenario]` is one of the three described below. You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
+where `[scenario]` is one of the three described below (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
 
 ## Demo Scenarios
 
