@@ -99,7 +99,7 @@ int main() {
     plotter_t p;
     std::cout << "/*\n";
     {
-        component::interactive_simulator<opt>::net network{common::make_tagged_tuple<plotter,texture>(&p,"building.jpg")};
+        component::interactive_simulator<opt>::net network{common::make_tagged_tuple<plotter,name,texture>(&p,"Smart Home","building.jpg")};
         network.run();
     }
     std::cout << "*/\n";
