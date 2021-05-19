@@ -80,7 +80,7 @@ enum class status {
 };
 
 //! @brief Colors to represent status.
-color status_colors[8] = {MAROON, RED, MAROON, GRAY, BLUE, GREEN, YELLOW, GREEN};
+packed_color status_colors[8] = {MAROON, RED, MAROON, GRAY, BLUE, GREEN, YELLOW, GREEN};
 
 //! @brief Helper function to access storage.
 template <template<int> class T, typename node_t>
@@ -206,7 +206,7 @@ MAIN() {
         if (i+1 == area_display)
             node.storage(size{}) = 5 + (3 - no_redundancy - area_handled) * 5;
     }
-    node.storage(col{}) = status_colors[(int)stat];
+    node.storage(col{}) = color(status_colors[(int)stat]);
 }
 
 }

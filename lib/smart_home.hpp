@@ -131,7 +131,7 @@ MAIN() {
     node.storage(fail<local_weak_monitor>{}) = not active_when_present_twice;
     node.storage(fail<global_strong_monitor>{}) = not always_active_when_present;
     node.storage(fail<global_weak_monitor>{}) = not always_active_when_present_twice;
-    node.storage(col{}) = s ? (a ? YELLOW : SILVER) : TAN;
+    node.storage(col{}) = color(s ? (a ? YELLOW : SILVER) : TAN);
     node.storage(size{}) = always_active_when_present_twice ? 0.3 : active_when_present_twice ? 0.5 : 0.8;
 }
 
