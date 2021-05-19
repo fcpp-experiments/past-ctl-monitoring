@@ -88,8 +88,8 @@ To launch a scenario manually, move to the `bin` directory and run its executabl
 - `G` to show/hide the grid on the reference plane and node pins
 - `Q`,`W`,`E`,`A`,`S`,`D` to move the simulation area along orthogonal axes
 - `C` resets the camera to the starting position
--`M` enables/disables the marker for selecting nodes
--`left-click` on a selected node to open a window with node details
+- `M` enables/disables the marker for selecting nodes
+- `left-click` on a selected node to open a window with node details
 - `right-click`+`mouse drag` to rotate the camera
 - `mouse scroll` for zooming in and out
--`left-shift` added to the commands above for precision control
+- `left-shift` added to the commands above for precision control
