@@ -42,7 +42,7 @@ if [ "$platform" == windows ]; then
     cp bin/fcpp/src/libfcpp.dll bin/
 fi
 if [ "$1" == "all" ]; then
-    for target in crowd_safety drones_recognition smart_home; do
+    for target in crowd_safety drones_recognition smart_home server_discovery; do
         make_target $target
     done
 else

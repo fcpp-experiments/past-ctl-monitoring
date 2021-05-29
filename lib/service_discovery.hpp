@@ -5,8 +5,8 @@
  * @brief Implementation of the case study on drones recognition.
  */
 
-#ifndef FCPP_SERVER_DISCOVERY_H_
-#define FCPP_SERVER_DISCOVERY_H_
+#ifndef FCPP_SERVICE_DISCOVERY_H_
+#define FCPP_SERVICE_DISCOVERY_H_
 
 #include <cassert>
 #include <limits>
@@ -159,7 +159,7 @@ MAIN() {
     using namespace tags;
 
     bool tower = node.uid < 4;
-    node.connector_data() = tower ? 1 : 0.5;
+    common::get<fcpp::component::tags::power_ratio>(node.connector_data()) = tower ? 1 : 0.5;
 
     status stat = tower ? status::QUIET : status::TIRED;
     vec<3> target = node.position();
@@ -213,4 +213,4 @@ MAIN() {
 
 }
 
-#endif // FCPP_SERVER_DISCOVERY_H_
+#endif // FCPP_SERVICE_DISCOVERY_H_

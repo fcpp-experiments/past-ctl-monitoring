@@ -2,7 +2,7 @@
 
 #include "lib/fcpp.hpp"
 #include "lib/simulation/displayer.hpp"
-#include "lib/server_discovery.hpp"
+#include "lib/service_discovery.hpp"
 
 /**
  * @brief Namespace containing all the objects in the FCPP library.
@@ -87,7 +87,7 @@ DECLARE_OPTIONS(opt,
     program<coordination::main>,
     exports<vec<dim>, tuple<coordination::status,vec<dim>>, bool, real_t, size_t, tuple<real_t,times_t>>,
     retain<metric::retain<2,1>>,
-    connector<connect::hierarchical<connect::fixed<1>>>,
+    connector<connect::hierarchical<connect::powered<500, 1, 3>>>,
     round_schedule<round_s>,
     log_schedule<export_s>,
     spawn_schedule<spawn_s>,

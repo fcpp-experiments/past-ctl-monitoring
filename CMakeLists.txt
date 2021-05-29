@@ -17,6 +17,17 @@ option(FCPP_BUILD_GL "Build OpenGL features." ON) # this tells CMake to compile 
 add_subdirectory(./fcpp/src/)
 target_compile_options(fcpp PUBLIC "-DFCPP_CONFIGURATION=FCPP_CONFIGURATION_DEPENDENT")
 
+# CROWD SAFETY
+project(service_discovery
+  VERSION 0.1.0
+  DESCRIPTION "Service Discovery Case Study."
+  )
+add_executable(service_discovery ./run/service_discovery.cpp)
+set_target_properties(service_discovery PROPERTIES VERSION &{PROJECT_VERSION})
+target_link_libraries(service_discovery PRIVATE fcpp)
+target_include_directories(service_discovery PRIVATE ./)
+copyGraphicsFolders(service_discovery $<TARGET_FILE_DIR:fcpp> $<TARGET_FILE_DIR:service_discovery>)
+copyTextureFolder(service_discovery ${PROJECT_SOURCE_DIR} $<TARGET_FILE_DIR:service_discovery>)
 
 # CROWD SAFETY
 project(crowd_safety
