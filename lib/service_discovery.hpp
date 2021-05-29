@@ -154,9 +154,17 @@ FUN void tower_automaton(ARGS, status& stat, bool close_handling) {
     }
 }
 
-//! @brief Drones recognition case study.
+//! @brief Service discovery case study.
 MAIN() {
     using namespace tags;
+
+    // set random time to exit (between 0 and 300)
+    times_t exit_time = constant(CALL, node.next_real(0, 300));
+
+    if (node.current_time() == exit_time) {
+        node.terminate();
+        return;
+    }
 
     bool tower = node.uid < 4;
     common::get<fcpp::component::tags::power_ratio>(node.connector_data()) = tower ? 1 : 0.5;
