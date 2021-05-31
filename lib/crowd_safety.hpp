@@ -1,4 +1,4 @@
-// Copyright © 2020 Gianluca Torta. All Rights Reserved.
+// Copyright © 2021 Gianluca Torta. All Rights Reserved.
 
 /**
  * @file crowd_safety.hpp
@@ -8,11 +8,9 @@
 #ifndef FCPP_CROWD_SAFETY_H_
 #define FCPP_CROWD_SAFETY_H_
 
-#include "lib/data.hpp"
+#include "lib/fcpp.hpp"
 #include "lib/logic_samples.hpp"
-#include "lib/past_ctl.hpp"
-#include "lib/data/vec.hpp"
-#include "lib/coordination/time.hpp"
+
 
 /**
  * @brief Namespace containing all the objects in the FCPP library.

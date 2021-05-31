@@ -1,4 +1,4 @@
-// Copyright © 2020 Giorgio Audrito. All Rights Reserved.
+// Copyright © 2021 Giorgio Audrito. All Rights Reserved.
 
 /**
  * @file drones_recognition.hpp
@@ -8,12 +8,7 @@
 #ifndef FCPP_DRONES_RECOGNITION_H_
 #define FCPP_DRONES_RECOGNITION_H_
 
-#include <cassert>
-#include <limits>
-
-#include "lib/coordination.hpp"
-#include "lib/data.hpp"
-#include "lib/internal/trace.hpp"
+#include "lib/fcpp.hpp"
 #include "lib/logic_samples.hpp"
 
 
@@ -157,9 +152,10 @@ FUN void tower_automaton(ARGS, status& stat, bool close_handling) {
 //! @brief Drones recognition case study.
 MAIN() {
     using namespace tags;
+    using namespace component::tags;
 
     bool tower = node.uid < 4;
-    node.connector_data() = tower ? 1 : 0.5;
+    node.connector_data() = common::make_tagged_tuple<network_rank, power_ratio>(tower ? 0 : 1, tower ? 1 : 0.5);
 
     status stat = tower ? status::QUIET : status::TIRED;
     vec<3> target = node.position();

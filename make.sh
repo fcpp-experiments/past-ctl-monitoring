@@ -36,7 +36,7 @@ function make_target {
 
 git submodule init
 git submodule update
-cmake -S ./ -B ./bin -G "$flag Makefiles" -DCMAKE_BUILD_TYPE=Release -Wno-dev
+cmake -S ./ -B ./bin -G "$flag Makefiles" -DCMAKE_BUILD_TYPE=Release
 cmake --build ./bin/
 if [ "$platform" == windows ]; then
     cp bin/fcpp/src/libfcpp.dll bin/

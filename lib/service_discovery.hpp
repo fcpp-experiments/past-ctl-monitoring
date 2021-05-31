@@ -1,4 +1,4 @@
-// Copyright © 2020 Giorgio Audrito. All Rights Reserved.
+// Copyright © 2021 Giorgio Audrito. All Rights Reserved.
 
 /**
  * @file server_discovery.hpp
@@ -8,12 +8,7 @@
 #ifndef FCPP_SERVICE_DISCOVERY_H_
 #define FCPP_SERVICE_DISCOVERY_H_
 
-#include <cassert>
-#include <limits>
-
-#include "lib/coordination.hpp"
-#include "lib/data.hpp"
-#include "lib/internal/trace.hpp"
+#include "lib/fcpp.hpp"
 #include "lib/logic_samples.hpp"
 
 
