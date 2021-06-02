@@ -8,8 +8,11 @@ using namespace component::tags;
 using namespace coordination::tags;
 
 
-//! @brief Number of drones in the area.
-constexpr size_t drones_num = 50;
+//! @brief Number of edge, fog, cloud, and all nodes
+constexpr size_t edge_num = 50;
+constexpr size_t fog_num = 20;
+constexpr size_t cloud_num = 5;
+constexpr size_t node_num = edge_num + fog_num + cloud_num;
 
 //! @brief Dimensionality of the space.
 constexpr size_t dim = 3;
@@ -23,11 +26,16 @@ using round_s = sequence::periodic<
 //! @brief Description of the export schedule.
 using export_s = sequence::periodic_n<1, 0, 1>;
 
-//! @brief Description of the sequence of node creation events.
-using spawn_s = sequence::multiple_n<drones_num, 0>;
+//! @brief Description of the sequences of node creation events.
+using edge_spawn_s = sequence::multiple_n<edge_num, 0>;
+using fog_spawn_s = sequence::multiple_n<fog_num, 0>;
+using cloud_spawn_s = sequence::multiple_n<cloud_num, 0>;
 
-//! @brief Description of the initial position distribution.
-using rectangle_d = distribution::rect_n<1, 0, 0, 0, 1000, 1000, 0>;
+//! @brief Description of the initial position distribution (edge, fog, and cloud nodes).
+using edge_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 300, edge_num>;
+using fog_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 150, fog_num>;
+using cloud_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 20, cloud_num>;
+
 
 //! @brief Storage tags and types.
 using storage_t = tuple_store<
@@ -69,8 +77,12 @@ DECLARE_OPTIONS(opt,
     connector<connect::hierarchical<connect::powered<500, 1, 3>>>,
     round_schedule<round_s>,
     log_schedule<export_s>,
-    spawn_schedule<spawn_s>,
-    init<x, rectangle_d>,
+    spawn_schedule<edge_spawn_s>,
+    init<x, edge_circle_d>,
+    spawn_schedule<fog_spawn_s>,
+    init<x,fog_circle_d>,
+    spawn_schedule<cloud_spawn_s>,
+    init<x,cloud_circle_d>,
     storage_t,
     aggregator_t,
     plot_type<plotter_t>,
