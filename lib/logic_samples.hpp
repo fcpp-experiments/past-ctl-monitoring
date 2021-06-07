@@ -19,6 +19,9 @@ namespace fcpp {
 //! @brief Namespace containing the libraries of coordination routines.
 namespace coordination {
 
+//! @brief The types used in export in the logic namespace.
+FUN_EXPORT logic_t = common::export_list<bool>;
+
 //! @brief Namespace containing logical operators and formulas.
 namespace logic {
 
