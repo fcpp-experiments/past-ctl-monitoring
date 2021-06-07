@@ -28,7 +28,6 @@ function make_target {
     cd bin
     ./$target | tee ../plot/$target.asy
     cd ../plot
-#    sed -i "" -E "s| \(mean-mean\)||g" $target.asy
     asy $target.asy -f pdf
     rm *timfail*
     cd ..
@@ -38,9 +37,6 @@ git submodule init
 git submodule update
 cmake -S ./ -B ./bin -G "$flag Makefiles" -DCMAKE_BUILD_TYPE=Release
 cmake --build ./bin/
-if [ "$platform" == windows ]; then
-    cp bin/fcpp/src/libfcpp.dll bin/
-fi
 if [ "$1" == "all" ]; then
     for target in crowd_safety drones_recognition smart_home server_discovery; do
         make_target $target
