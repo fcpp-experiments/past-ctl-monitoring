@@ -50,38 +50,26 @@ constexpr size_t node_num = edge_num + fog_num + cloud_num;
 //! @brief Which area monitor to display with sizes.
 constexpr int area_display = 2;
 
-//! @brief Top speed for an UAV.
-constexpr real_t speed = 15;
-
 //! @brief Top acceleration for an UAV.
 constexpr real_t accel = 5;
 
-//! @brief Probability of getting a random job while resting.
-constexpr real_t random_job = 0.05;
+//! @brief Probability of issuing a request while computing.
+constexpr real_t random_req = 0.10;
 
-//! @brief Minimum height while flying.
-constexpr real_t flying_low = 20;
-
-//! @brief Maximum height while flying.
-constexpr real_t flying_high = 100;
+//! @brief Probability of receiving a response while waiting
+constexpr real_t random_resp = 0.20;
 
 //! @brief Distance after which the target is taken for reached.
 constexpr real_t epsilon_dist = 1;
 
 //! @brief Status of devices.
 enum class status {
-    QUIET,  // tower before asking service
-    NEEDY,  // tower asking service now
-    GOOD,   // tower after asking service
-    WAIT,   // drone waiting for a job
-    TIRED,  // drone recharging
-    RISE,   // drone going towards a destination
-    HANDLE, // drone handling a destination
-    FALL    // drone going to rest after handling
+    COMPUTE,   // computing
+    WAITRESP   // waiting for a response
 };
 
 //! @brief Colors to represent status.
-packed_color status_colors[8] = {MAROON, RED, MAROON, BLUE, BLUE, GREEN, YELLOW, GREEN};
+packed_color status_colors[] = {BLUE, RED};
 
 //! @brief Helper function to access storage.
 template <template<int> class T, typename node_t>
@@ -103,36 +91,10 @@ bool& storage(node_t& node, size_t i) {
 //! @brief Manages movement of drones towards targets.
 FUN void drone_automaton(ARGS, status& stat, vec<3>& target) {
     switch (stat) {
-        case status::RISE:
-        {
-            std::array<vec<3>, 2> path = {node.position(), target};
-            path[0][2] = flying_low;
-            path[1][2] = flying_high;
-            auto d = follow_path(CALL, path, speed, 1);
-            if (get<0>(d) == 1 and get<1>(d) < epsilon_dist)
-                stat = status::HANDLE;
-            break;
-        }
-        case status::HANDLE:
-            stat = status::FALL;
-            target = random_rectangle_target(CALL, make_vec(0,0,0), make_vec(1000,1000,0));
-            break;
-        case status::FALL:
-        {
-            std::array<vec<3>, 2> path = {target, target};
-            path[0][2] = flying_low;
-            auto d = follow_path(CALL, path, speed, 1);
-            if (get<0>(d) == 1 and get<1>(d) < epsilon_dist)
-                stat = status::TIRED;
-            break;
-        }
-        case status::TIRED:
-            follow_target(CALL, target, speed, 1);
-            if (node.next_real() < random_job)
-                stat = status::WAIT;
-            break;
-        default:
-            break;
+    case status::WAITRESP:
+        break;
+    default:
+        break;
     }
 }
 
@@ -140,76 +102,81 @@ FUN void drone_automaton(ARGS, status& stat, vec<3>& target) {
 MAIN() {
     using namespace tags;
 
+    bool req=false, resp=false;
+
     size_t nsize=0;
 
-    // set random time to start (between 0 and 50)
-    times_t start_time = constant(CALL, node.next_real(0, 10));
+    times_t start_time = 0;
+    times_t exit_time = 0;
 
-    // set random time to exit (between 0 and 300)
-    times_t exit_time = constant(CALL, node.next_real(0, 300));
-
-    // if (node.current_time() == exit_time) {
-    //     node.terminate();
-    //     return;
-    // }
+    // set a random job length (between 1 and 10)
+    times_t random_job_length;
 
     bool edge = node.uid < edge_num;
     bool fog = (node.uid - edge_num >= 0) && (node.uid - edge_num < fog_num);
     bool cloud = (node.uid - edge_num - fog_num >= 0);
 
-
     nsize = 20;
     if (edge) nsize = 5;
     if (fog) nsize = 10;
+    node.storage(size{}) = nsize;
 
-    if (node.current_time() < start_time) {
-        node.storage(size{}) = 0;
-    } else if (node.current_time() >= start_time) {
-        node.storage(size{}) = nsize;
+    if (edge) {
+        // if edge set random time to start (between 0 and 20)
+        start_time = constant(CALL, node.next_real(0, 20));
+
+        // if edge, set random time to exit (between 20 and 200)
+        exit_time = constant(CALL, node.next_real(20, 200));
+
+        if (node.current_time() < start_time) {
+            node.storage(size{}) = 0;
+        } else {
+            node.storage(size{}) = nsize;
+        }
+
+        if (node.current_time() == exit_time) {
+            node.terminate();
+            return;
+        }
     }
 
     common::get<fcpp::component::tags::power_ratio>(node.connector_data()) = cloud || fog ? 1 : 0.5;
-
-    status stat = status::WAIT;
-    vec<3> target = node.position();
-    tie(stat, target) = old(CALL, make_tuple(stat, target), [&](tuple<status, vec<3>> o){
+    status stat = status::COMPUTE;
+    size_t req_type = 0;
+    tie(stat, req_type) = old(CALL, make_tuple(stat, req_type), [&](tuple<status, int> o){
         status stat = get<0>(o);
-        vec<3> target = get<1>(o);
-        bool close_handling = any_hood(CALL, nbr(CALL, stat == status::HANDLE) and map_hood([&](vec<3> v){
-            return distance(v, make_vec(0,0,flying_high)) < epsilon_dist;
-        }, node.nbr_vec()));
-        drone_automaton(CALL, stat, target);
+        size_t req_type = get<1>(o);
 
-        real_t req_dist = bis_distance(CALL, stat == status::NEEDY, 1, 80);
-        vec<3> req_pos = broadcast(CALL, req_dist, node.position());
-        req_pos[2] = flying_high;
-        bool free = stat == status::WAIT or target == req_pos;
-        real_t free_dist = free ? req_dist : INF;
-        real_t closest_free = mp_collection(CALL, req_dist, free_dist, INF, [&](real_t x, real_t y){
-            return min(x,y);
-        }, [&](real_t x, size_t) {
-            return x;
-        });
-        real_t req_radius = broadcast(CALL, req_dist, closest_free);
-        if (stat == status::WAIT) {
-            if (node.next_real() < random_job) {
-                stat = status::WAIT;
+        if (stat == status::COMPUTE) {
+            if (node.next_real() < random_req) {
+                stat = status::WAITRESP;
+                req_type = node.next_real(1, 10);
+                req = true;
             }
         }
-        return make_tuple(stat, target);
+        if (stat == status::WAITRESP) {
+            if (node.next_real() < random_resp) {
+                stat = status::COMPUTE;
+                req_type = 0;
+                resp = true;
+            }
+        }
+
+        return make_tuple(stat, req_type);
     });
 
-    for (internal::trace_cycle i{node.stack_trace, 0}; i<4; ++i) {
-        int x = i % 2;
-        int y = i / 2;
-        bool handling = stat == status::HANDLE and target == make_vec(250+500*x,250+500*y,flying_high);
-        bool area_handled = logic::area_handled(CALL, handling);
-        bool no_redundancy = logic::no_redundancy(CALL, handling);
-        storage<handling_monitor>(node, i+1) = not area_handled;
-        storage<redundancy_monitor>(node, i+1) = not no_redundancy;
-        // if (i+1 == area_display)
-        //     node.storage(size{}) = 5 + (3 - no_redundancy - area_handled) * 5;
-    }
+    // for (internal::trace_cycle i{node.stack_trace, 0}; i<4; ++i) {
+    //     int x = i % 2;
+    //     int y = i / 2;
+    //     bool handling = stat == status::HANDLE and target == make_vec(250+500*x,250+500*y,flying_high);
+    //     bool area_handled = logic::area_handled(CALL, handling);
+    //     bool no_redundancy = logic::no_redundancy(CALL, handling);
+    //     storage<handling_monitor>(node, i+1) = not area_handled;
+    //     storage<redundancy_monitor>(node, i+1) = not no_redundancy;
+    // }
+
+    bool response_time = logic::all_response_time(CALL, req, resp);
+
     node.storage(col{}) = color(status_colors[(int)stat]);
 }
 
