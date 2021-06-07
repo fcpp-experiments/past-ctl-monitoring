@@ -41,6 +41,12 @@ namespace tags {
     struct size {};
 }
 
+//! @brief Number of edge, fog, cloud, and all nodes
+constexpr size_t edge_num = 50;
+constexpr size_t fog_num = 20;
+constexpr size_t cloud_num = 5;
+constexpr size_t node_num = edge_num + fog_num + cloud_num;
+
 //! @brief Which area monitor to display with sizes.
 constexpr int area_display = 2;
 
@@ -75,7 +81,7 @@ enum class status {
 };
 
 //! @brief Colors to represent status.
-packed_color status_colors[8] = {MAROON, RED, MAROON, GRAY, BLUE, GREEN, YELLOW, GREEN};
+packed_color status_colors[8] = {MAROON, RED, MAROON, BLUE, BLUE, GREEN, YELLOW, GREEN};
 
 //! @brief Helper function to access storage.
 template <template<int> class T, typename node_t>
@@ -130,41 +136,41 @@ FUN void drone_automaton(ARGS, status& stat, vec<3>& target) {
     }
 }
 
-//! @brief Manages neediness of towers.
-FUN void tower_automaton(ARGS, status& stat, bool close_handling) {
-    int x = node.uid % 2;
-    int y = node.uid / 2;
-    node.position() = make_vec(250+500*x,250+500*y,0);
-    switch (stat) {
-        case status::QUIET:
-            if (node.current_time() > constant(CALL, node.next_real(0, 200)))
-                stat = status::NEEDY;
-            break;
-        case status::NEEDY:
-            if (close_handling)
-                stat = status::GOOD;
-            break;
-        default:
-            break;
-    }
-}
-
 //! @brief Service discovery case study.
 MAIN() {
     using namespace tags;
 
+    size_t nsize=0;
+
+    // set random time to start (between 0 and 50)
+    times_t start_time = constant(CALL, node.next_real(0, 10));
+
     // set random time to exit (between 0 and 300)
     times_t exit_time = constant(CALL, node.next_real(0, 300));
 
-    if (node.current_time() == exit_time) {
-        node.terminate();
-        return;
+    // if (node.current_time() == exit_time) {
+    //     node.terminate();
+    //     return;
+    // }
+
+    bool edge = node.uid < edge_num;
+    bool fog = (node.uid - edge_num >= 0) && (node.uid - edge_num < fog_num);
+    bool cloud = (node.uid - edge_num - fog_num >= 0);
+
+
+    nsize = 20;
+    if (edge) nsize = 5;
+    if (fog) nsize = 10;
+
+    if (node.current_time() < start_time) {
+        node.storage(size{}) = 0;
+    } else if (node.current_time() >= start_time) {
+        node.storage(size{}) = nsize;
     }
 
-    bool tower = node.uid < 4;
-    common::get<fcpp::component::tags::power_ratio>(node.connector_data()) = tower ? 1 : 0.5;
+    common::get<fcpp::component::tags::power_ratio>(node.connector_data()) = cloud || fog ? 1 : 0.5;
 
-    status stat = tower ? status::QUIET : status::TIRED;
+    status stat = status::WAIT;
     vec<3> target = node.position();
     tie(stat, target) = old(CALL, make_tuple(stat, target), [&](tuple<status, vec<3>> o){
         status stat = get<0>(o);
@@ -172,8 +178,7 @@ MAIN() {
         bool close_handling = any_hood(CALL, nbr(CALL, stat == status::HANDLE) and map_hood([&](vec<3> v){
             return distance(v, make_vec(0,0,flying_high)) < epsilon_dist;
         }, node.nbr_vec()));
-        if (tower) tower_automaton(CALL, stat, close_handling);
-        else drone_automaton(CALL, stat, target);
+        drone_automaton(CALL, stat, target);
 
         real_t req_dist = bis_distance(CALL, stat == status::NEEDY, 1, 80);
         vec<3> req_pos = broadcast(CALL, req_dist, node.position());
@@ -187,12 +192,8 @@ MAIN() {
         });
         real_t req_radius = broadcast(CALL, req_dist, closest_free);
         if (stat == status::WAIT) {
-            if (free_dist == req_radius and req_radius < INF) {
-                target = req_pos;
-                stat = status::RISE;
-            } else if (node.next_real() < random_job) {
-                target = random_rectangle_target(CALL, make_vec(0,0,flying_high), make_vec(1000,1000,flying_high));
-                stat = status::RISE;
+            if (node.next_real() < random_job) {
+                stat = status::WAIT;
             }
         }
         return make_tuple(stat, target);
@@ -206,8 +207,8 @@ MAIN() {
         bool no_redundancy = logic::no_redundancy(CALL, handling);
         storage<handling_monitor>(node, i+1) = not area_handled;
         storage<redundancy_monitor>(node, i+1) = not no_redundancy;
-        if (i+1 == area_display)
-            node.storage(size{}) = 5 + (3 - no_redundancy - area_handled) * 5;
+        // if (i+1 == area_display)
+        //     node.storage(size{}) = 5 + (3 - no_redundancy - area_handled) * 5;
     }
     node.storage(col{}) = color(status_colors[(int)stat]);
 }
