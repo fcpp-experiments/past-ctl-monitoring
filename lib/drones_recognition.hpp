@@ -129,6 +129,7 @@ FUN void drone_automaton(ARGS, status& stat, vec<3>& target) {
             break;
     }
 }
+FUN_EXPORT drone_automaton_t = common::export_list<coordination::follow_path_t>;
 
 //! @brief Manages neediness of towers.
 FUN void tower_automaton(ARGS, status& stat, bool close_handling) {
@@ -148,6 +149,7 @@ FUN void tower_automaton(ARGS, status& stat, bool close_handling) {
             break;
     }
 }
+FUN_EXPORT tower_automaton_t = common::export_list<coordination::constant_t<real_t>>;
 
 //! @brief Drones recognition case study.
 MAIN() {
@@ -204,6 +206,7 @@ MAIN() {
     }
     node.storage(col{}) = color(status_colors[(int)stat]);
 }
+FUN_EXPORT main_t = common::export_list<drone_automaton_t, tower_automaton_t, tuple<status, vec<3>>, coordination::logic_t, coordination::bis_distance_t, coordination::broadcast_t<real_t, vec<3>>, coordination::mp_collection_t<real_t, real_t>, coordination::broadcast_t<real_t, real_t>>;
 
 }
 
