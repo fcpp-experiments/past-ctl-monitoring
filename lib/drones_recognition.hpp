@@ -165,7 +165,7 @@ MAIN() {
         status stat = get<0>(o);
         vec<3> target = get<1>(o);
         bool close_handling = any_hood(CALL, nbr(CALL, stat == status::HANDLE) and map_hood([&](vec<3> v){
-            return distance(v, make_vec(0,0,flying_high)) < epsilon_dist;
+            return v - make_vec(0,0,flying_high) < epsilon_dist;
         }, node.nbr_vec()));
         if (tower) tower_automaton(CALL, stat, close_handling);
         else drone_automaton(CALL, stat, target);
