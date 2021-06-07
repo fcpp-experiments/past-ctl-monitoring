@@ -193,7 +193,7 @@ MAIN() {
         return make_tuple(stat, target);
     });
 
-    for (internal::trace_cycle i{node.stack_trace, 0}; i<4; ++i) {
+    FOR (i, 0, i<4) {
         int x = i % 2;
         int y = i / 2;
         bool handling = stat == status::HANDLE and target == make_vec(250+500*x,250+500*y,flying_high);
