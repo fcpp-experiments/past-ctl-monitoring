@@ -26,14 +26,22 @@ FUN_EXPORT logic_t = common::export_list<bool>;
 namespace logic {
 
 //! @brief If a req has been placed 5 time steps ago, a resp must have been received
+// FUN bool all_response_time(ARGS, bool req, bool resp) { CODE
+//         return !EH(CALL, Y(CALL, Y(CALL, Y(CALL, Y(CALL, Y(CALL, req))))) &
+//                          Y(CALL, Y(CALL, Y(CALL, Y(CALL, !resp)))) &
+//                          Y(CALL, Y(CALL, Y(CALL, !resp))) &
+//                          Y(CALL, Y(CALL, !resp)) &
+//                          Y(CALL, !resp) &
+//                          !resp);
+//         }
 FUN bool all_response_time(ARGS, bool req, bool resp) { CODE
         return !EH(CALL, Y(CALL, Y(CALL, Y(CALL, Y(CALL, Y(CALL, req))))) &
-                         Y(CALL, Y(CALL, Y(CALL, Y(CALL, !resp)))) &
-                         Y(CALL, Y(CALL, Y(CALL, !resp))) &
-                         Y(CALL, Y(CALL, !resp)) &
-                         Y(CALL, !resp) &
-                         !resp);
-        }
+                   Y(CALL, Y(CALL, Y(CALL, Y(CALL, !resp)))) &
+                   Y(CALL, Y(CALL, Y(CALL, !resp))) &
+                   Y(CALL, Y(CALL, !resp)) &
+                   Y(CALL, !resp) &
+                   !resp);
+}
 
 
 //! @brief During alert, once safe stays safe.

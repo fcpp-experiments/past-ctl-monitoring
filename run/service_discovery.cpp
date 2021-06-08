@@ -39,28 +39,20 @@ using cloud_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 20, cloud_num>;
 
 //! @brief Storage tags and types.
 using storage_t = tuple_store<
-    fail<handling_monitor<1>>,      bool,
-    fail<redundancy_monitor<1>>,    bool,
-    fail<handling_monitor<2>>,      bool,
-    fail<redundancy_monitor<2>>,    bool,
-    fail<handling_monitor<3>>,      bool,
-    fail<redundancy_monitor<3>>,    bool,
-    fail<handling_monitor<4>>,      bool,
-    fail<redundancy_monitor<4>>,    bool,
+    fail<response_time_monitor<1>>,      bool,
+    fail<response_time_monitor<2>>,      bool,
+    fail<response_time_monitor<3>>,      bool,
+    fail<response_time_monitor<4>>,      bool,
     col,                            color,
     size,                           double
 >;
 
 //! @brief Storage tags to be logged with aggregators.
 using aggregator_t = aggregators<
-    fail<handling_monitor<1>>,      aggregator::mean<double>,
-    fail<redundancy_monitor<1>>,    aggregator::mean<double>,
-    fail<handling_monitor<2>>,      aggregator::mean<double>,
-    fail<redundancy_monitor<2>>,    aggregator::mean<double>,
-    fail<handling_monitor<3>>,      aggregator::mean<double>,
-    fail<redundancy_monitor<3>>,    aggregator::mean<double>,
-    fail<handling_monitor<4>>,      aggregator::mean<double>,
-    fail<redundancy_monitor<4>>,    aggregator::mean<double>
+    fail<response_time_monitor<1>>,      aggregator::mean<double>,
+    fail<response_time_monitor<2>>,      aggregator::mean<double>,
+    fail<response_time_monitor<3>>,      aggregator::mean<double>,
+    fail<response_time_monitor<4>>,      aggregator::mean<double>
 >;
 
 //! @brief Plot description.

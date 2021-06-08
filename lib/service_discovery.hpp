@@ -29,12 +29,9 @@ namespace tags {
     //! @brief Parametric tag for formula failure.
     template <typename T>
     struct fail {};
-    //! @brief Liveness monitor formula for area i.
+    //! @brief Response time monitor formula for message type i.
     template <int i>
-    struct handling_monitor {};
-    //! @brief Safety monitor formula for area i.
-    template <int i>
-    struct redundancy_monitor {};
+    struct response_time_monitor {};
     //! @brief Color representing the kind of a node (person, light off, light on).
     struct col {};
     //! @brief Size of the current node (strong monitor true < globally false < locally false).
@@ -50,9 +47,6 @@ constexpr size_t node_num = edge_num + fog_num + cloud_num;
 //! @brief Which area monitor to display with sizes.
 constexpr int area_display = 2;
 
-//! @brief Top acceleration for an UAV.
-constexpr real_t accel = 5;
-
 //! @brief Probability of issuing a request while computing.
 constexpr real_t random_req = 0.10;
 
@@ -61,6 +55,9 @@ constexpr real_t random_resp = 0.20;
 
 //! @brief Distance after which the target is taken for reached.
 constexpr real_t epsilon_dist = 1;
+
+//! @brief Distance after which the target is taken for reached.
+constexpr size_t ntypes_req = 4;
 
 //! @brief Status of devices.
 enum class status {
@@ -76,25 +73,15 @@ template <template<int> class T, typename node_t>
 bool& storage(node_t& node, size_t i) {
     using namespace tags;
     switch (i) {
-        case 1:
-            return node.storage(fail<T<1>>{});
-        case 2:
-            return node.storage(fail<T<2>>{});
-        case 3:
-            return node.storage(fail<T<3>>{});
-        default:
-            assert(i == 4);
-            return node.storage(fail<T<4>>{});
-    }
-}
-
-//! @brief Manages movement of drones towards targets.
-FUN void drone_automaton(ARGS, status& stat, vec<3>& target) {
-    switch (stat) {
-    case status::WAITRESP:
-        break;
+    case 1:
+        return node.storage(fail<T<1>>{});
+    case 2:
+        return node.storage(fail<T<2>>{});
+    case 3:
+        return node.storage(fail<T<3>>{});
     default:
-        break;
+        assert(i == 4);
+        return node.storage(fail<T<4>>{});
     }
 }
 
@@ -150,7 +137,7 @@ MAIN() {
         if (stat == status::COMPUTE) {
             if (node.next_real() < random_req) {
                 stat = status::WAITRESP;
-                req_type = node.next_real(1, 10);
+                req_type = node.next_real(1, ntypes_req);
                 req = true;
             }
         }
@@ -165,17 +152,10 @@ MAIN() {
         return make_tuple(stat, req_type);
     });
 
-    // for (internal::trace_cycle i{node.stack_trace, 0}; i<4; ++i) {
-    //     int x = i % 2;
-    //     int y = i / 2;
-    //     bool handling = stat == status::HANDLE and target == make_vec(250+500*x,250+500*y,flying_high);
-    //     bool area_handled = logic::area_handled(CALL, handling);
-    //     bool no_redundancy = logic::no_redundancy(CALL, handling);
-    //     storage<handling_monitor>(node, i+1) = not area_handled;
-    //     storage<redundancy_monitor>(node, i+1) = not no_redundancy;
-    // }
-
-    bool response_time = logic::all_response_time(CALL, req, resp);
+    FOR (i, 0, i<ntypes_req) {
+        bool all_response_time = logic::all_response_time(CALL, req, resp);
+        storage<response_time_monitor>(node, i+1) = all_response_time;
+    }
 
     node.storage(col{}) = color(status_colors[(int)stat]);
 }
