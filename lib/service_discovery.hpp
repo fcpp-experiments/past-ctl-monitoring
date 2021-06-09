@@ -160,6 +160,7 @@ MAIN() {
     node.storage(col{}) = color(status_colors[(int)stat]);
 }
 
+    FUN_EXPORT main_t = common::export_list<real_t, tuple<status, size_t>, coordination::logic_t>;
 }
 
 }
