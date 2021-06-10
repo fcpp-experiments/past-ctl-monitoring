@@ -25,24 +25,18 @@ FUN_EXPORT logic_t = common::export_list<bool>;
 //! @brief Namespace containing logical operators and formulas.
 namespace logic {
 
-//! @brief If a req has been placed 5 time steps ago, a resp must have been received
-// FUN bool all_response_time(ARGS, bool req, bool resp) { CODE
-//         return !EH(CALL, Y(CALL, Y(CALL, Y(CALL, Y(CALL, Y(CALL, req))))) &
-//                          Y(CALL, Y(CALL, Y(CALL, Y(CALL, !resp)))) &
-//                          Y(CALL, Y(CALL, Y(CALL, !resp))) &
-//                          Y(CALL, Y(CALL, !resp)) &
-//                          Y(CALL, !resp) &
-//                          !resp);
-//         }
-FUN bool all_response_time(ARGS, bool req, bool resp) { CODE
-        return !EH(CALL, Y(CALL, Y(CALL, Y(CALL, Y(CALL, Y(CALL, req))))) &
-                   Y(CALL, Y(CALL, Y(CALL, Y(CALL, !resp)))) &
-                   Y(CALL, Y(CALL, Y(CALL, !resp))) &
-                   Y(CALL, Y(CALL, !resp)) &
-                   Y(CALL, !resp) &
-                   !resp);
+//! @brief If a req has been placed n time steps ago, a resp must have been received
+FUN bool no_reply(ARGS, bool req, bool resp, size_t n) { CODE
+        if (n==0)
+            return req;
+        else
+            return (!resp && Y(CALL, no_reply(CALL, req, resp, n-1)));
 }
 
+
+FUN bool all_response_time(ARGS, bool req, bool resp, size_t n) { CODE
+    return !EP(CALL, no_reply(CALL, req, resp, n));
+}
 
 //! @brief During alert, once safe stays safe.
 FUN bool my_safety_preserved(ARGS, bool safe, bool alert) { CODE

@@ -44,19 +44,19 @@ constexpr size_t fog_num = 20;
 constexpr size_t cloud_num = 5;
 constexpr size_t node_num = edge_num + fog_num + cloud_num;
 
-//! @brief Which area monitor to display with sizes.
-constexpr int area_display = 2;
+//! @brief Number of time instants before waiting response T/O
+constexpr size_t resp_timeout = 5;
 
 //! @brief Probability of issuing a request while computing.
-constexpr real_t random_req = 0.10;
+constexpr real_t random_req = 0.2;
 
-//! @brief Probability of receiving a response while waiting
-constexpr real_t random_resp = 0.20;
+//! @brief Probability of receiving a response while waiting (by req type)
+constexpr real_t random_resp[] = {0.3, 0.5, 0.7, 0.9};
 
 //! @brief Distance after which the target is taken for reached.
 constexpr real_t epsilon_dist = 1;
 
-//! @brief Distance after which the target is taken for reached.
+//! @brief Number of request types.
 constexpr size_t ntypes_req = 4;
 
 //! @brief Status of devices.
@@ -137,12 +137,13 @@ MAIN() {
         if (stat == status::COMPUTE) {
             if (node.next_real() < random_req) {
                 stat = status::WAITRESP;
-                req_type = node.next_real(1, ntypes_req);
+                req_type = node.next_real(1, ntypes_req+1);
                 req = true;
             }
         }
         if (stat == status::WAITRESP) {
-            if (node.next_real() < random_resp) {
+            // the response probability depends on the type of request
+            if (node.next_real() < random_resp[req_type-1]) {
                 stat = status::COMPUTE;
                 req_type = 0;
                 resp = true;
@@ -152,9 +153,11 @@ MAIN() {
         return make_tuple(stat, req_type);
     });
 
-    FOR (i, 0, i<ntypes_req) {
-        bool all_response_time = logic::all_response_time(CALL, req, resp);
-        storage<response_time_monitor>(node, i+1) = all_response_time;
+    if (node.current_time() > resp_timeout) {
+        FOR (i, 0, i<ntypes_req) {
+            bool all_response_time = logic::all_response_time(CALL, req && (req_type == (i+1)), resp, resp_timeout);
+            storage<response_time_monitor>(node, i+1) = all_response_time;
+        }
     }
 
     node.storage(col{}) = color(status_colors[(int)stat]);
