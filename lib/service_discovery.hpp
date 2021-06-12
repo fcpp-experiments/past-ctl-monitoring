@@ -17,10 +17,10 @@
  */
 namespace fcpp {
 
-//! @brief Dummy ordering between positions.
-bool operator<(vec<3> const&, vec<3> const&) {
-    return false;
-}
+// //! @brief Dummy ordering between positions.
+// bool operator<(vec<3> const&, vec<3> const&) {
+//     return false;
+// }
 
 //! @brief Namespace containing the libraries of coordination routines.
 namespace coordination {
@@ -32,6 +32,8 @@ namespace tags {
     //! @brief Response time monitor formula for message type i.
     template <int i>
     struct response_time_monitor {};
+    //! @brief Unwanted response monitor formula.
+    struct unwanted_response_monitor {};
     //! @brief Color representing the kind of a node (person, light off, light on).
     struct col {};
     //! @brief Size of the current node (strong monitor true < globally false < locally false).
@@ -49,6 +51,9 @@ constexpr size_t resp_timeout = 5;
 
 //! @brief Probability of issuing a request while computing.
 constexpr real_t random_req = 0.2;
+
+//! @brief Probability of receiving a response not matching the previous request
+constexpr real_t random_err_resp = 0.2;
 
 //! @brief Probability of receiving a response while waiting (by req type)
 constexpr real_t random_resp[] = {0.3, 0.5, 0.7, 0.9};
@@ -128,8 +133,10 @@ MAIN() {
     }
 
     common::get<fcpp::component::tags::power_ratio>(node.connector_data()) = cloud || fog ? 1 : 0.5;
+
     status stat = status::COMPUTE;
     size_t req_type = 0;
+    size_t resp_type = 0;
     tie(stat, req_type) = old(CALL, make_tuple(stat, req_type), [&](tuple<status, int> o){
         status stat = get<0>(o);
         size_t req_type = get<1>(o);
@@ -144,6 +151,11 @@ MAIN() {
         if (stat == status::WAITRESP) {
             // the response probability depends on the type of request
             if (node.next_real() < random_resp[req_type-1]) {
+                // receive a matching or non-matching response
+                if (node.next_real() > random_err_resp)
+                    resp_type = req_type;
+                else
+                    resp_type = 1 + (req_type + 1) % ntypes_req;
                 stat = status::COMPUTE;
                 req_type = 0;
                 resp = true;
@@ -153,17 +165,20 @@ MAIN() {
         return make_tuple(stat, req_type);
     });
 
+    bool no_unwanted_response = true;
     if (node.current_time() > resp_timeout) {
         FOR (i, 0, i<ntypes_req) {
             bool all_response_time = logic::all_response_time(CALL, req && (req_type == (i+1)), resp, resp_timeout);
             storage<response_time_monitor>(node, i+1) = all_response_time;
+            no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, req && (req_type == (i+1)), resp && (resp_type == (i+1)));
         }
     }
+    node.storage(unwanted_response_monitor{}) = no_unwanted_response;
 
     node.storage(col{}) = color(status_colors[(int)stat]);
 }
 
-    FUN_EXPORT main_t = common::export_list<real_t, tuple<status, size_t>, coordination::logic_t>;
+FUN_EXPORT main_t = common::export_list<real_t, tuple<status, size_t>, coordination::logic_t>;
 }
 
 }

@@ -25,6 +25,10 @@ FUN_EXPORT logic_t = common::export_list<bool>;
 //! @brief Namespace containing logical operators and formulas.
 namespace logic {
 
+FUN bool no_unwanted_response(ARGS, bool req, bool resp) { CODE
+        return AH(CALL, resp <= EP(CALL, req));
+}
+
 //! @brief If a req has been placed n time steps ago, a resp must have been received
 FUN bool no_reply(ARGS, bool req, bool resp, size_t n) { CODE
         if (n==0)
