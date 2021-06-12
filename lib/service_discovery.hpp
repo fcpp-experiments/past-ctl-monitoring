@@ -73,7 +73,7 @@ enum class status {
 };
 
 //! @brief Colors to represent status.
-packed_color status_colors[] = {BLUE, RED};
+packed_color status_colors[] = {YELLOW, RED};
 
 //! @brief Helper function to access storage.
 template <template<int> class T, typename node_t>
