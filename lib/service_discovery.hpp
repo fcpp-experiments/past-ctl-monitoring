@@ -52,14 +52,14 @@ constexpr size_t resp_timeout = 5;
 //! @brief Probability of issuing a request while computing.
 constexpr real_t random_req = 0.2;
 
+//! @brief Probability of issuing a request of type 1 when issuing a req
+constexpr real_t random_req1 = 0.2;
+
 //! @brief Probability of receiving a response not matching the previous request
-constexpr real_t random_err_resp = 0.2;
+constexpr real_t random_err_resp = 0.1;
 
 //! @brief Probability of receiving a response while waiting (by req type)
 constexpr real_t random_resp[] = {0.3, 0.5, 0.7, 0.9};
-
-//! @brief Distance after which the target is taken for reached.
-constexpr real_t epsilon_dist = 1;
 
 //! @brief Number of request types.
 constexpr size_t ntypes_req = 4;
@@ -101,9 +101,6 @@ MAIN() {
     times_t start_time = 0;
     times_t exit_time = 0;
 
-    // set a random job length (between 1 and 10)
-    times_t random_job_length;
-
     bool edge = node.uid < edge_num;
     bool fog = (node.uid - edge_num >= 0) && (node.uid - edge_num < fog_num);
     bool cloud = (node.uid - edge_num - fog_num >= 0);
@@ -144,11 +141,12 @@ MAIN() {
         if (stat == status::COMPUTE) {
             if (node.next_real() < random_req) {
                 stat = status::WAITRESP;
-                req_type = node.next_real(1, ntypes_req+1);
+                req_type = node.next_real(1, ntypes_req+1); // no req 1
+                if (node.next_real() < random_req1)
+                    req_type = 1;
                 req = true;
             }
-        }
-        if (stat == status::WAITRESP) {
+        } else if (stat == status::WAITRESP) {
             // the response probability depends on the type of request
             if (node.next_real() < random_resp[req_type-1]) {
                 // receive a matching or non-matching response
@@ -166,12 +164,12 @@ MAIN() {
     });
 
     bool no_unwanted_response = true;
-    if (node.current_time() > resp_timeout) {
-        FOR (i, 0, i<ntypes_req) {
+    FOR (i, 0, i<ntypes_req) {
+        if (node.current_time() > resp_timeout) {
             bool all_response_time = logic::all_response_time(CALL, req && (req_type == (i+1)), resp, resp_timeout);
             storage<response_time_monitor>(node, i+1) = all_response_time;
-            no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, req && (req_type == (i+1)), resp && (resp_type == (i+1)));
         }
+        no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, req && (req_type == (i+1)), resp && (resp_type == (i+1)));
     }
     node.storage(unwanted_response_monitor{}) = no_unwanted_response;
 
