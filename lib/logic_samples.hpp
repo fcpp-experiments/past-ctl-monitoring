@@ -25,22 +25,29 @@ FUN_EXPORT logic_t = common::export_list<bool>;
 //! @brief Namespace containing logical operators and formulas.
 namespace logic {
 
+//! @brief No response without corresponding request.
 FUN bool no_unwanted_response(ARGS, bool req, bool resp) { CODE
-        return AH(CALL, resp <= EP(CALL, req));
+    return AH(CALL, resp <= P(CALL, req));
 }
 
-//! @brief If a req has been placed n time steps ago, a resp must have been received
+//! @brief No second request before receiving a response.
+FUN bool no_double_request(ARGS, bool req, bool resp) { CODE
+    return !EP(CALL, Y(CALL, S(CALL, !resp, req)) && req);
+}
+
+//! @brief No reply for n round after a request.
 FUN bool no_reply(ARGS, bool req, bool resp, size_t n) { CODE
-        if (n==0)
-            return req;
-        else
-            return (!resp && Y(CALL, no_reply(CALL, req, resp, n-1)));
+    if (n==0)
+        return req;
+    else
+        return (!resp && Y(CALL, no_reply(CALL, req, resp, n-1)));
 }
 
-
+//! @brief Response comes always within n rounds.
 FUN bool all_response_time(ARGS, bool req, bool resp, size_t n) { CODE
     return !EP(CALL, no_reply(CALL, req, resp, n));
 }
+
 
 //! @brief During alert, once safe stays safe.
 FUN bool my_safety_preserved(ARGS, bool safe, bool alert) { CODE

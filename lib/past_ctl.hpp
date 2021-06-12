@@ -25,7 +25,7 @@ namespace logic {
 
 //! @brief Yesterday in the same device.
 FUN bool Y(ARGS, bool F) { CODE
-    return old(CALL, F);
+    return old(CALL, false, F);
 }
 
 //! @brief Yesterday in all devices.
@@ -37,7 +37,7 @@ FUN bool AY(ARGS, bool F) { CODE
 
 //! @brief Yesterday in some device.
 FUN bool EY(ARGS, bool F) { CODE
-    return nbr(CALL, true, [&](field<bool> n){
+    return nbr(CALL, false, [&](field<bool> n){
         return make_tuple(any_hood(CALL, n), F);
     });
 }
@@ -59,7 +59,7 @@ FUN bool AS(ARGS, bool F1, bool F2) { CODE
 //! @brief F1 holds since F2 held in any device.
 FUN bool ES(ARGS, bool F1, bool F2) { CODE
     return nbr(CALL, false, [&](field<bool> n) -> bool {
-        return F2 | (F1 & all_hood(CALL, n));
+        return F2 | (F1 & any_hood(CALL, n));
     });
 }
 

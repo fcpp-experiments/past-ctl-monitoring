@@ -8,12 +8,6 @@ using namespace component::tags;
 using namespace coordination::tags;
 
 
-//! @brief Number of edge, fog, cloud, and all nodes
-constexpr size_t edge_num = 50;
-constexpr size_t fog_num = 20;
-constexpr size_t cloud_num = 5;
-constexpr size_t node_num = edge_num + fog_num + cloud_num;
-
 //! @brief Dimensionality of the space.
 constexpr size_t dim = 3;
 
@@ -33,8 +27,8 @@ using cloud_spawn_s = sequence::multiple_n<cloud_num, 0>;
 
 //! @brief Description of the initial position distribution (edge, fog, and cloud nodes).
 using edge_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 300, edge_num>;
-using fog_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 150, fog_num>;
-using cloud_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 20, cloud_num>;
+using fog_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 200, fog_num>;
+using cloud_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 50, cloud_num>;
 
 
 //! @brief Storage tags and types.
@@ -68,7 +62,7 @@ DECLARE_OPTIONS(opt,
     program<coordination::main>,
     exports<coordination::main_t>,
     retain<metric::retain<2,1>>,
-    connector<connect::hierarchical<connect::powered<100, 1, 3>>>,
+    connector<connect::hierarchical<connect::powered<200, 1, 3>>>,
     round_schedule<round_s>,
     log_schedule<export_s>,
     spawn_schedule<edge_spawn_s>,
