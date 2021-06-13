@@ -31,9 +31,6 @@ constexpr size_t resp_timeout = 5;
 //! @brief Probability of issuing a request while computing.
 constexpr real_t random_req = 0.2;
 
-//! @brief Probability of issuing a request of type 1 when issuing a req
-constexpr real_t random_req1 = 0.2;
-
 //! @brief Probability of receiving a response not matching the previous request
 constexpr real_t random_err_resp = 0.01;
 
@@ -137,6 +134,7 @@ MAIN() {
     status stat = status::COMPUTE;
     size_t req_type = 0;
     size_t resp_type = 0;
+    size_t err_resp_type = 0;
     tie(stat, req_type) = old(CALL, make_tuple(stat, req_type), [&](tuple<status, int> o){
         status stat = get<0>(o);
         size_t req_type = get<1>(o);
@@ -145,20 +143,17 @@ MAIN() {
             if (node.next_real() < random_req) {
                 stat = status::WAITRESP;
                 req_type = node.next_real(1, ntypes_req+1);
-                // // no req 1
-                // if (node.next_real() < random_req1)
-                //     req_type = 1;
                 req = true;
             }
         } else if (stat == status::WAITRESP) {
             // the response probability depends on the type of request
             if (node.next_real() < random_resp[req_type-1]) {
-                // receive a matching or non-matching response
-                // if (node.next_real() > random_err_resp)
-                //     resp_type = req_type;
-                // else
-                //     resp_type = 1 + (req_type + 1) % ntypes_req;
                 resp_type = req_type;
+                // receive a matching "err" response or (ONLY FOR req_type 4) possibly non-matching
+                if (node.next_real() > random_err_resp || req_type <4)
+                     err_resp_type = req_type;
+                else
+                     err_resp_type = 1 + req_type % ntypes_req;
                 stat = status::COMPUTE;
                 req_type = 0;
                 resp = true;
@@ -173,9 +168,10 @@ MAIN() {
     FOR (i, 0, i<ntypes_req) {
         bool rq = req && req_type == i+1;
         bool rs = resp && resp_type == i+1;
+        bool errrs = resp && err_resp_type == i+1;
         bool all_response_time = logic::all_response_time(CALL, rq, rs, resp_timeout);
         storage<response_time_monitor>(node, i+1) = all_response_time;
-        no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, rq, rs);
+        no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, rq, errrs);
         no_double_request = no_double_request && logic::no_double_request(CALL, rq, rs);
     }
     node.storage(fail<unwanted_response_monitor>{}) = no_unwanted_response;
