@@ -37,7 +37,8 @@ using storage_t = tuple_store<
     fail<response_time_monitor<2>>,      bool,
     fail<response_time_monitor<3>>,      bool,
     fail<response_time_monitor<4>>,      bool,
-    unwanted_response_monitor,           bool,
+    fail<unwanted_response_monitor>,     bool,
+    fail<no_doublereq_monitor>,          bool,
     col,                            color,
     size,                           double
 >;
@@ -48,7 +49,8 @@ using aggregator_t = aggregators<
     fail<response_time_monitor<2>>,      aggregator::mean<double>,
     fail<response_time_monitor<3>>,      aggregator::mean<double>,
     fail<response_time_monitor<4>>,      aggregator::mean<double>,
-    unwanted_response_monitor,           aggregator::mean<double>
+    fail<unwanted_response_monitor>,     aggregator::mean<double>,
+    fail<no_doublereq_monitor>,          aggregator::mean<double>
 >;
 
 //! @brief Plot description.

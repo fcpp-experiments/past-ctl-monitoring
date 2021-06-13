@@ -60,6 +60,8 @@ namespace tags {
     struct response_time_monitor {};
     //! @brief Unwanted response monitor formula.
     struct unwanted_response_monitor {};
+    //! @brief No double requests monitor formula.
+    struct no_doublereq_monitor {};
     //! @brief Color representing the kind of a node (person, light off, light on).
     struct col {};
     //! @brief Size of the current node (strong monitor true < globally false < locally false).
@@ -174,7 +176,8 @@ MAIN() {
         no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, rq, rs);
         no_double_request = no_double_request && logic::no_double_request(CALL, rq, rs);
     }
-    node.storage(unwanted_response_monitor{}) = no_unwanted_response;
+    node.storage(fail<unwanted_response_monitor>{}) = no_unwanted_response;
+    node.storage(fail<no_doublereq_monitor>{}) = no_double_request;
 
     node.storage(col{}) = color(status_colors[(int)stat]);
 }
