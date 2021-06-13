@@ -35,10 +35,10 @@ constexpr real_t random_req = 0.2;
 constexpr real_t random_req1 = 0.2;
 
 //! @brief Probability of receiving a response not matching the previous request
-constexpr real_t random_err_resp = 0.1;
+constexpr real_t random_err_resp = 0.01;
 
 //! @brief Probability of receiving a response while waiting (by req type)
-constexpr real_t random_resp[] = {0.3, 0.5, 0.7, 0.9};
+constexpr real_t random_resp[] = {0.3, 0.45, 0.6, 0.75};
 
 //! @brief Number of request types.
 constexpr size_t ntypes_req = 4;
@@ -124,7 +124,7 @@ MAIN() {
         } else node.storage(size{}) = 5;
 
         // if edge, set random time to exit (between 20 and 200)
-        exit_time = constant(CALL, node.next_real(20, 200));
+        exit_time = constant(CALL, node.next_real(100, 200));
         if (node.current_time() > exit_time) {
             node.storage(size{}) = 0;
             node.next_time(1000000);
@@ -144,19 +144,21 @@ MAIN() {
         if (stat == status::COMPUTE) {
             if (node.next_real() < random_req) {
                 stat = status::WAITRESP;
-                req_type = node.next_real(1, ntypes_req+1); // no req 1
-                if (node.next_real() < random_req1)
-                    req_type = 1;
+                req_type = node.next_real(1, ntypes_req+1);
+                // // no req 1
+                // if (node.next_real() < random_req1)
+                //     req_type = 1;
                 req = true;
             }
         } else if (stat == status::WAITRESP) {
             // the response probability depends on the type of request
             if (node.next_real() < random_resp[req_type-1]) {
                 // receive a matching or non-matching response
-                if (node.next_real() > random_err_resp)
-                    resp_type = req_type;
-                else
-                    resp_type = 1 + (req_type + 1) % ntypes_req;
+                // if (node.next_real() > random_err_resp)
+                //     resp_type = req_type;
+                // else
+                //     resp_type = 1 + (req_type + 1) % ntypes_req;
+                resp_type = req_type;
                 stat = status::COMPUTE;
                 req_type = 0;
                 resp = true;
