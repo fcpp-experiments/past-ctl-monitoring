@@ -57,11 +57,11 @@ namespace tags {
     struct fail {};
     //! @brief Response time monitor formula for message type i.
     template <int i>
-    struct response_time_monitor {};
+    struct timeout_monitor {};
     //! @brief Unwanted response monitor formula.
-    struct unwanted_response_monitor {};
+    struct spurious_monitor {};
     //! @brief No double requests monitor formula.
-    struct no_doublereq_monitor {};
+    struct double_req_monitor {};
     //! @brief Color representing the status a node (compute, wait response).
     struct status_c {};
     //! @brief Color representing the request type of a node (1-4).
@@ -174,12 +174,12 @@ MAIN() {
         bool rq = req && (req_type == i+1);
         bool rs = resp && (resp_type == i+1);
         bool all_response_time = logic::all_response_time(CALL, rq, rs, resp_timeout);
-        storage<response_time_monitor>(node, i+1) = !all_response_time;
+        storage<timeout_monitor>(node, i+1) = !all_response_time;
         no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, rq, rs);
         no_double_request = no_double_request && logic::no_double_request(CALL, rq, rs);
     }
-    node.storage(fail<unwanted_response_monitor>{}) = !no_unwanted_response;
-    node.storage(fail<no_doublereq_monitor>{}) = !no_double_request;
+    node.storage(fail<spurious_monitor>{}) = !no_unwanted_response;
+    node.storage(fail<double_req_monitor>{}) = !no_double_request;
 
     node.storage(status_c{}) = color(status_colors[(int)stat]);
     node.storage(reqtype_c{}) = color(req_type_colors[req_type]);
