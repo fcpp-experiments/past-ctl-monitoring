@@ -62,8 +62,10 @@ namespace tags {
     struct unwanted_response_monitor {};
     //! @brief No double requests monitor formula.
     struct no_doublereq_monitor {};
-    //! @brief Color representing the kind of a node (person, light off, light on).
-    struct col {};
+    //! @brief Color representing the status a node (compute, wait response).
+    struct status_c {};
+    //! @brief Color representing the request type of a node (1-4).
+    struct reqtype_c {};
     //! @brief Size of the current node (strong monitor true < globally false < locally false).
     struct size {};
 }
@@ -76,6 +78,7 @@ enum class status {
 
 //! @brief Colors to represent status.
 packed_color status_colors[] = {YELLOW, RED};
+packed_color req_type_colors[] = {LIGHT_GREEN,FOREST_GREEN,GREEN,DARK_GREEN};
 
 //! @brief Helper function to access storage.
 template <template<int> class T, typename node_t>
@@ -178,7 +181,8 @@ MAIN() {
     node.storage(fail<unwanted_response_monitor>{}) = !no_unwanted_response;
     node.storage(fail<no_doublereq_monitor>{}) = !no_double_request;
 
-    node.storage(col{}) = color(status_colors[(int)stat]);
+    node.storage(status_c{}) = color(status_colors[(int)stat]);
+    node.storage(reqtype_c{}) = color(req_type_colors[req_type]);
 }
 FUN_EXPORT main_t = common::export_list<real_t, tuple<status, size_t>, logic_t, counter_t<>>;
 

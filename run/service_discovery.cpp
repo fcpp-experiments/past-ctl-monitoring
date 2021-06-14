@@ -39,7 +39,8 @@ using storage_t = tuple_store<
     fail<response_time_monitor<4>>,      bool,
     fail<unwanted_response_monitor>,     bool,
     fail<no_doublereq_monitor>,          bool,
-    col,                            color,
+    status_c,                            color,
+    reqtype_c,                           color,
     size,                           double
 >;
 
@@ -77,7 +78,7 @@ DECLARE_OPTIONS(opt,
     aggregator_t,
     plot_type<plotter_t>,
     size_tag<size>,
-    color_tag<col>
+    color_tag<reqtype_c,status_c>
 );
 
 int main() {
