@@ -31,8 +31,11 @@ constexpr size_t resp_timeout = 5;
 //! @brief Probability of issuing a request while computing.
 constexpr real_t random_req = 0.2;
 
+//! @brief Probability of sending a spurious second-in-a-row request
+constexpr real_t random_err_req = 0.004;
+
 //! @brief Probability of receiving a response not matching the previous request
-constexpr real_t random_err_resp = 0.01;
+constexpr real_t random_err_resp = 0.004;
 
 //! @brief Probability of receiving a response while waiting (by req type)
 constexpr real_t random_resp[] = {0.3, 0.45, 0.6, 0.75};
@@ -149,15 +152,14 @@ MAIN() {
             // the response probability depends on the type of request
             if (node.next_real() < random_resp[req_type-1]) {
                 resp_type = req_type;
-                // receive a matching "err" response or (ONLY FOR req_type 4) possibly non-matching
-                if (node.next_real() > random_err_resp || req_type <4)
-                     err_resp_type = req_type;
-                else
-                     err_resp_type = 1 + req_type % ntypes_req;
                 stat = status::COMPUTE;
                 req_type = 0;
                 resp = true;
-            }
+            } else if (node.next_real() < random_err_resp) {
+                resp_type = 1 + req_type % ntypes_req;
+                resp = true;
+            } else if (node.next_real() < random_err_req)
+                req = true;
         }
 
         return make_tuple(stat, req_type);
@@ -166,16 +168,15 @@ MAIN() {
     bool no_unwanted_response = true;
     bool no_double_request = true;
     FOR (i, 0, i<ntypes_req) {
-        bool rq = req && req_type == i+1;
-        bool rs = resp && resp_type == i+1;
-        bool errrs = resp && err_resp_type == i+1;
+        bool rq = req && (req_type == i+1);
+        bool rs = resp && (resp_type == i+1);
         bool all_response_time = logic::all_response_time(CALL, rq, rs, resp_timeout);
-        storage<response_time_monitor>(node, i+1) = all_response_time;
-        no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, rq, errrs);
+        storage<response_time_monitor>(node, i+1) = !all_response_time;
+        no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, rq, rs);
         no_double_request = no_double_request && logic::no_double_request(CALL, rq, rs);
     }
-    node.storage(fail<unwanted_response_monitor>{}) = no_unwanted_response;
-    node.storage(fail<no_doublereq_monitor>{}) = no_double_request;
+    node.storage(fail<unwanted_response_monitor>{}) = !no_unwanted_response;
+    node.storage(fail<no_doublereq_monitor>{}) = !no_double_request;
 
     node.storage(col{}) = color(status_colors[(int)stat]);
 }
