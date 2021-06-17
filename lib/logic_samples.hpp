@@ -25,14 +25,24 @@ FUN_EXPORT logic_t = common::export_list<bool>;
 //! @brief Namespace containing logical operators and formulas.
 namespace logic {
 
+//! @brief Response without corresponding request in the current round.
+FUN bool my_unwanted_response(ARGS, bool req, bool resp) { CODE
+    return !(resp <= Y(CALL, S(CALL, !resp, req)));
+}
+
 //! @brief No response without corresponding request.
 FUN bool no_unwanted_response(ARGS, bool req, bool resp) { CODE
-    return AH(CALL, resp <= P(CALL, req));
+    return AH(CALL, resp <= S(CALL, !resp, req));
+}
+
+//! @brief Making a second request before receiving a response in the current round.
+FUN bool my_double_request(ARGS, bool req, bool resp) { CODE
+    return Y(CALL, S(CALL, !resp, req)) & req;
 }
 
 //! @brief No second request before receiving a response.
 FUN bool no_double_request(ARGS, bool req, bool resp) { CODE
-    return !EP(CALL, Y(CALL, S(CALL, !resp, req)) && req);
+    return !EP(CALL, Y(CALL, S(CALL, !resp, req)) & req);
 }
 
 //! @brief No reply for n round after a request.
@@ -40,7 +50,7 @@ FUN bool no_reply(ARGS, bool req, bool resp, size_t n) { CODE
     if (n==0)
         return req;
     else
-        return (!resp && Y(CALL, no_reply(CALL, req, resp, n-1)));
+        return (!resp & Y(CALL, no_reply(CALL, req, resp, n-1)));
 }
 
 //! @brief Response comes always within n rounds.

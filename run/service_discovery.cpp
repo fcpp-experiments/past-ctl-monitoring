@@ -8,6 +8,15 @@ using namespace component::tags;
 using namespace coordination::tags;
 
 
+//! @brief Number of edge nodes
+constexpr size_t edge_num = 50;
+
+//! @brief Number of fog nodes
+constexpr size_t fog_num = 20;
+
+//! @brief Number of cloud nodes
+constexpr size_t cloud_num = 5;
+
 //! @brief Dimensionality of the space.
 constexpr size_t dim = 3;
 
@@ -26,15 +35,36 @@ using round_s = sequence::periodic<
 using export_s = sequence::periodic_n<1, 0, 1, end_time>;
 
 //! @brief Description of the sequences of node creation events.
-using edge_spawn_s = sequence::multiple_n<edge_num, 0>;
-using fog_spawn_s = sequence::multiple_n<fog_num, 0>;
+//! @{
+using edge_spawn_s  = sequence::multiple_n<edge_num,  0>;
+using fog_spawn_s   = sequence::multiple_n<fog_num,   0>;
 using cloud_spawn_s = sequence::multiple_n<cloud_num, 0>;
+//! @}
 
-//! @brief Description of the initial position distribution (edge, fog, and cloud nodes).
-using edge_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 300, edge_num>;
-using fog_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 200, fog_num>;
-using cloud_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 50, cloud_num>;
+//! @brief Description of the initial position distributions.
+//! @{
+using edge_circle_d  = sequence::circle_n<1, 500, 500, 0, 0, 0, 300, edge_num>;
+using fog_circle_d   = sequence::circle_n<1, 500, 500, 0, 0, 0, 200, fog_num>;
+using cloud_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 50,  cloud_num>;
+//! @}
 
+//! @brief Description of the node type distributions.
+//! @{
+CONSTANT_DISTRIBUTION(edge_d,  type, type::EDGE);
+CONSTANT_DISTRIBUTION(fog_d,   type, type::FOG);
+CONSTANT_DISTRIBUTION(cloud_d, type, type::CLOUD);
+//! @}
+
+//! @brief Description of the node connection data distributions.
+//! @{
+using conn_t = common::tagged_tuple_t<network_rank, int, power_ratio, real_t>;
+CONSTANT_DISTRIBUTION(edge_conn_d,  conn_t, conn_t(2, 0.8));
+CONSTANT_DISTRIBUTION(fog_conn_d,   conn_t, conn_t(1, 1.0));
+CONSTANT_DISTRIBUTION(cloud_conn_d, conn_t, conn_t(0, 1.0));
+//! @}
+
+//! @brief Description of the node shape distribution.
+CONSTANT_DISTRIBUTION(shape_d, shape, shape::sphere);
 
 //! @brief Storage tags and types.
 using storage_t = tuple_store<
@@ -44,8 +74,10 @@ using storage_t = tuple_store<
     fail<timeout_monitor<4>>,      bool,
     fail<spurious_monitor>,        bool,
     fail<double_req_monitor>,      bool,
+    node_type,                     type,
     status_c,                      color,
-    reqtype_c,                     color,
+    waiting_c,                     color,
+    shape,                         shape,
     size,                          double
 >;
 
@@ -73,17 +105,15 @@ DECLARE_OPTIONS(opt,
     connector<connect::hierarchical<connect::powered<200, 1, 3>>>,
     round_schedule<round_s>,
     log_schedule<export_s>,
-    spawn_schedule<edge_spawn_s>,
-    init<x, edge_circle_d>,
-    spawn_schedule<fog_spawn_s>,
-    init<x,fog_circle_d>,
-    spawn_schedule<cloud_spawn_s>,
-    init<x,cloud_circle_d>,
+    spawn_schedule<edge_spawn_s>,   init<shape, shape_d, x, edge_circle_d,  node_type, edge_d,  size, distribution::constant_n<double, 0>,  connection_data, edge_conn_d>,
+    spawn_schedule<fog_spawn_s>,    init<shape, shape_d, x, fog_circle_d,   node_type, fog_d,   size, distribution::constant_n<double, 20>, connection_data, fog_conn_d>,
+    spawn_schedule<cloud_spawn_s>,  init<shape, shape_d, x, cloud_circle_d, node_type, cloud_d, size, distribution::constant_n<double, 30>, connection_data, cloud_conn_d>,
     storage_t,
     aggregator_t,
     plot_type<plotter_t>,
     size_tag<size>,
-    color_tag<reqtype_c,status_c>
+    color_tag<status_c, waiting_c>,
+    shape_tag<shape>
 );
 
 int main() {

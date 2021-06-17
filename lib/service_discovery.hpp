@@ -1,8 +1,8 @@
 // Copyright © 2021 Giorgio Audrito. All Rights Reserved.
 
 /**
- * @file server_discovery.hpp
- * @brief Implementation of the case study on drones recognition.
+ * @file service_discovery.hpp
+ * @brief Implementation of the case study on service discovery.
  */
 
 #ifndef FCPP_SERVICE_DISCOVERY_H_
@@ -17,13 +17,36 @@
  */
 namespace fcpp {
 
-//! @brief Number of edge, fog, cloud, and all nodes
-//! @{
-constexpr size_t edge_num = 50;
-constexpr size_t fog_num = 20;
-constexpr size_t cloud_num = 5;
-constexpr size_t node_num = edge_num + fog_num + cloud_num;
-//! @}
+//! @brief Type of devices.
+enum class type {
+    EDGE,   // edge device
+    FOG,    // fog device
+    CLOUD   // cloud device
+};
+
+//! @brief Namespace containing the libraries of coordination routines.
+namespace coordination {
+
+namespace tags {
+    //! @brief Parametric tag for formula failure.
+    template <typename T>
+    struct fail {};
+    //! @brief Response time monitor formula for message type i.
+    template <int i>
+    struct timeout_monitor {};
+    //! @brief Unwanted response monitor formula.
+    struct spurious_monitor {};
+    //! @brief No double requests monitor formula.
+    struct double_req_monitor {};
+    //! @brief Whether the node is edge, fog or cloud.
+    struct node_type {};
+    //! @brief Color representing the status a node (compute, wait response by type).
+    struct status_c {};
+    //! @brief Color representing the waiting time of a node.
+    struct waiting_c {};
+    //! @brief Size of the current node (strong monitor true < globally false < locally false).
+    struct size {};
+}
 
 //! @brief Number of time instants before waiting response T/O
 constexpr size_t resp_timeout = 5;
@@ -43,42 +66,14 @@ constexpr real_t random_resp[] = {0.3, 0.45, 0.6, 0.75};
 //! @brief Number of request types.
 constexpr size_t ntypes_req = 4;
 
-// //! @brief Dummy ordering between positions.
-// bool operator<(vec<3> const&, vec<3> const&) {
-//     return false;
-// }
-
-//! @brief Namespace containing the libraries of coordination routines.
-namespace coordination {
-
-namespace tags {
-    //! @brief Parametric tag for formula failure.
-    template <typename T>
-    struct fail {};
-    //! @brief Response time monitor formula for message type i.
-    template <int i>
-    struct timeout_monitor {};
-    //! @brief Unwanted response monitor formula.
-    struct spurious_monitor {};
-    //! @brief No double requests monitor formula.
-    struct double_req_monitor {};
-    //! @brief Color representing the status a node (compute, wait response).
-    struct status_c {};
-    //! @brief Color representing the request type of a node (1-4).
-    struct reqtype_c {};
-    //! @brief Size of the current node (strong monitor true < globally false < locally false).
-    struct size {};
-}
-
 //! @brief Status of devices.
 enum class status {
     COMPUTE,   // computing
     WAITRESP   // waiting for a response
 };
 
-//! @brief Colors to represent status.
-packed_color status_colors[] = {YELLOW, RED};
-packed_color req_type_colors[] = {LIGHT_GREEN,FOREST_GREEN,GREEN,DARK_GREEN};
+//! @brief Colors to represent request type and status.
+packed_color status_colors[] = {SILVER, YELLOW, LIME_GREEN, RED, FUCHSIA};
 
 //! @brief Helper function to access storage.
 template <template<int> class T, typename node_t>
@@ -102,40 +97,23 @@ MAIN() {
     using namespace tags;
     using namespace component::tags;
 
-    bool req=false, resp=false;
-
-    size_t nsize=0;
-
-    times_t start_time = 0;
-    times_t exit_time = 0;
-
-    bool edge = node.uid < edge_num;
-    bool fog = node.uid >= edge_num and node.uid < edge_num + fog_num;
-    bool cloud = node.uid >= edge_num + fog_num;
-
-    nsize = 20;
-    if (edge) nsize = 0;
-    if (fog) nsize = 10;
-    node.storage(size{}) = nsize;
-
-    if (edge) {
-        // if edge set random time to start (between 0 and 20)
-        start_time = constant(CALL, node.next_real(0, 20));
+    if (node.storage(node_type{}) == type::EDGE) {
+        // set random time to enter (between 0 and 20)
+        times_t start_time = constant(CALL, node.next_real(0, 20));
         if (counter(CALL) == 1) {
             node.next_time(start_time);
             return;
-        } else node.storage(size{}) = 5;
+        } else node.storage(size{}) = 15;
 
-        // if edge, set random time to exit (between 20 and 200)
-        exit_time = constant(CALL, node.next_real(100, 200));
+        // set random time to exit (between 100 and 150)
+        times_t exit_time = constant(CALL, node.next_real(100, 150));
         if (node.current_time() > exit_time) {
             node.storage(size{}) = 0;
             return;
         }
     }
 
-    node.connector_data() = common::make_tagged_tuple<network_rank, power_ratio>(cloud ? 0 : fog ? 1 : 2, edge ? 0.8 : 1);
-
+    bool req=false, resp=false;
     status stat = status::COMPUTE;
     size_t req_type = 0;
     size_t resp_type = 0;
@@ -169,19 +147,32 @@ MAIN() {
 
     bool no_unwanted_response = true;
     bool no_double_request = true;
+    bool local_unwanted = false;
+    bool local_duplicated = false;
+    bool local_delay = false;
     FOR (i, 0, i<ntypes_req) {
         bool rq = req && (req_type == i+1);
         bool rs = resp && (resp_type == i+1);
-        bool all_response_time = logic::all_response_time(CALL, rq, rs, resp_timeout);
-        storage<timeout_monitor>(node, i+1) = !all_response_time;
-        no_unwanted_response = no_unwanted_response && logic::no_unwanted_response(CALL, rq, rs);
-        no_double_request = no_double_request && logic::no_double_request(CALL, rq, rs);
+        storage<timeout_monitor>(node, i+1) = !logic::all_response_time(CALL, rq, rs, resp_timeout);
+        no_unwanted_response &= logic::no_unwanted_response(CALL, rq, rs);
+        no_double_request &= logic::no_double_request(CALL, rq, rs);
+        local_unwanted |= logic::my_unwanted_response(CALL, rq, rs);
+        local_duplicated |= logic::my_double_request(CALL, rq, rs);
+        local_delay |= logic::no_reply(CALL, rq, rs, resp_timeout);
     }
     node.storage(fail<spurious_monitor>{}) = !no_unwanted_response;
     node.storage(fail<double_req_monitor>{}) = !no_double_request;
-
-    node.storage(status_c{}) = color(status_colors[(int)stat]);
-    node.storage(reqtype_c{}) = color(req_type_colors[req_type]);
+    double waiting_time = req_type > 0 ? 1.0/counter(CALL) : 1;
+    node.storage(status_c{}) = color(status_colors[req_type]);
+    node.storage(waiting_c{}) = waiting_time * node.storage(status_c{}) + (1-waiting_time) * color(BLACK);
+    if (local_unwanted)
+        node.storage(shape{}) = shape::star;
+    else if (local_duplicated)
+        node.storage(shape{}) = shape::tetrahedron;
+    else if (local_delay)
+        node.storage(shape{}) = shape::cube;
+    else
+        node.storage(shape{}) = shape::sphere;
 }
 FUN_EXPORT main_t = common::export_list<real_t, tuple<status, size_t>, logic_t, counter_t<>>;
 
