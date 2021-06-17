@@ -11,14 +11,19 @@ using namespace coordination::tags;
 //! @brief Dimensionality of the space.
 constexpr size_t dim = 3;
 
+//! @brief Final time for the plots.
+constexpr size_t end_time = 150;
+
+
 //! @brief Description of the round schedule.
 using round_s = sequence::periodic<
     distribution::interval_n<times_t, 0, 1>,
-    distribution::weibull_n<times_t, 10, 1, 10>
+    distribution::weibull_n<times_t, 10, 1, 10>,
+    distribution::constant_n<times_t, 2*end_time>
 >;
 
 //! @brief Description of the export schedule.
-using export_s = sequence::periodic_n<1, 0, 1>;
+using export_s = sequence::periodic_n<1, 0, 1, end_time>;
 
 //! @brief Description of the sequences of node creation events.
 using edge_spawn_s = sequence::multiple_n<edge_num, 0>;

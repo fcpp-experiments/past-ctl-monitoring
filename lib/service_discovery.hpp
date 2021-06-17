@@ -130,7 +130,6 @@ MAIN() {
         exit_time = constant(CALL, node.next_real(100, 200));
         if (node.current_time() > exit_time) {
             node.storage(size{}) = 0;
-            node.next_time(1000000);
             return;
         }
     }

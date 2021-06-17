@@ -36,9 +36,17 @@ function make_target {
 git submodule init
 git submodule update
 cmake -S ./ -B ./bin -G "$flag Makefiles" -DCMAKE_BUILD_TYPE=Release
+if [ $? -ne 0 ]; then
+    echo -e "\033[4mCMake error, exiting...\033[0m"
+    exit 1
+fi
 cmake --build ./bin/
+if [ $? -ne 0 ]; then
+    echo -e "\033[4mCompile error, exiting...\033[0m"
+    exit 1
+fi
 if [ "$1" == "all" ]; then
-    for target in crowd_safety drones_recognition smart_home server_discovery; do
+    for target in crowd_safety drones_recognition service_discovery smart_home; do
         make_target $target
     done
 else
