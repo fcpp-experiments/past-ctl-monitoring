@@ -32,7 +32,7 @@ FUN bool my_unwanted_response(ARGS, bool req, bool resp) { CODE
 
 //! @brief No response without corresponding request.
 FUN bool no_unwanted_response(ARGS, bool req, bool resp) { CODE
-    return AH(CALL, resp <= S(CALL, !resp, req));
+    return AH(CALL, resp <= Y(CALL, S(CALL, !resp, req)));
 }
 
 //! @brief Making a second request before receiving a response in the current round.
