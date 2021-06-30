@@ -18,7 +18,7 @@
 namespace fcpp {
 
 //! @brief Type of devices.
-enum class type {
+enum class devtype {
     EDGE,   // edge device
     FOG,    // fog device
     CLOUD   // cloud device
@@ -97,7 +97,7 @@ MAIN() {
     using namespace tags;
     using namespace component::tags;
 
-    if (node.storage(node_type{}) == type::EDGE) {
+    if (node.storage(node_type{}) == devtype::EDGE) {
         // set random time to enter (between 0 and 20)
         times_t start_time = constant(CALL, node.next_real(0, 20));
         if (counter(CALL) == 1) {

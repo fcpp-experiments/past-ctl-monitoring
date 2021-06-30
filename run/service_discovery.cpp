@@ -50,9 +50,9 @@ using cloud_circle_d = sequence::circle_n<1, 500, 500, 0, 0, 0, 50,  cloud_num>;
 
 //! @brief Description of the node type distributions.
 //! @{
-CONSTANT_DISTRIBUTION(edge_d,  type, type::EDGE);
-CONSTANT_DISTRIBUTION(fog_d,   type, type::FOG);
-CONSTANT_DISTRIBUTION(cloud_d, type, type::CLOUD);
+CONSTANT_DISTRIBUTION(edge_d,  devtype, devtype::EDGE);
+CONSTANT_DISTRIBUTION(fog_d,   devtype, devtype::FOG);
+CONSTANT_DISTRIBUTION(cloud_d, devtype, devtype::CLOUD);
 //! @}
 
 //! @brief Description of the node connection data distributions.
@@ -74,7 +74,7 @@ using storage_t = tuple_store<
     fail<timeout_monitor<4>>,      bool,
     fail<spurious_monitor>,        bool,
     fail<double_req_monitor>,      bool,
-    node_type,                     type,
+    node_type,                     devtype,
     status_c,                      color,
     waiting_c,                     color,
     shape,                         shape,
