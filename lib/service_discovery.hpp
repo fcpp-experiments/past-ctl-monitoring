@@ -150,7 +150,7 @@ MAIN() {
     bool local_unwanted = false;
     bool local_duplicated = false;
     bool local_delay = false;
-    FOR (i, 0, i<ntypes_req) {
+    for (LOOP(i, 0); i<ntypes_req; ++i) {
         bool rq = req && (req_type == i+1);
         bool rs = resp && (resp_type == i+1);
         storage<timeout_monitor>(node, i+1) = !logic::all_response_time(CALL, rq, rs, resp_timeout);

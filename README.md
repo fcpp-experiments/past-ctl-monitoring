@@ -12,7 +12,7 @@ The simulations in this repository have an OpenGL-based graphical interface. Com
 
 Pre-requisites:
 - [Git Bash](https://gitforwindows.org) (for issuing unix-style commands)
-- [MinGW-w64 builds 8.1.0](http://mingw-w64.org/doku.php/download/mingw-builds)
+- [MinGW-w64](http://mingw-w64.org) ([builds 8.1.0](http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/mingw-w64-install.exe/download))
 - [CMake 3.9](https://cmake.org) (or higher)
 - [Asymptote](http://asymptote.sourceforge.io) (for building the plots)
 
@@ -22,14 +22,6 @@ During MinGW installation, make sure you select "posix" threads (should be the d
 C:\Program Files (x86)\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin
 ```
 but the actual path may vary depending on your installation.
-
-Clone this repository, then go into its main directory to launch the `make.sh` script:
-```
-> git clone https://github.com/Harniver/past-ctl-monitoring.git
-> cd past-ctl-monitoring
-> ./make.sh windows [scenario]
-```
-where `[scenario]` is one of the three described in the next section (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
 
 ### Linux
 
@@ -44,14 +36,6 @@ To install these packages in Ubuntu, type the following command:
 sudo apt-get install xorg-dev g++ cmake asymptote
 ```
 
-Clone this repository, then go into its main directory to launch the `make.sh` script:
-```
-> git clone https://github.com/Harniver/past-ctl-monitoring.git
-> cd past-ctl-monitoring
-> ./make.sh unix [scenario]
-```
-where `[scenario]` is one of the three described in the next section (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
-
 ### MacOS
 
 Pre-requisites:
@@ -65,31 +49,37 @@ xcode-select --install
 brew install cmake asymptote
 ```
 
-Clone this repository, then go into its main directory to launch the `make.sh` script:
+
+## Execution
+
+In order to execute the simulations, type the following command in a terminal:
 ```
-> git clone https://github.com/Harniver/past-ctl-monitoring.git
-> cd past-ctl-monitoring
-> ./make.sh unix [scenario]
+> ./make.sh [targets...]
 ```
-where `[scenario]` is one of the three described in the next section (or `all` to launch them all). You should see output about building the executables, then the graphical simulation should pop up. When the simulation closes, the resulting data will be plotted in folder `plot/`.
+The possible targets are:
+- `service_discovery` (Section 4.1)
+- `drones_recognition` (Section 4.2)
+- `crowd_safety` (Section 4.3) 
+- `smart_home` (Section 4.4)
+- `all` (for running all of the above)
+You can also type part of a target and the script will execute every possible expansion (e.g., `dis` would expand to `service_discovery`).
 
-## Demo Scenarios
+Running the above command, you should see output about building the executables then the graphical simulation should pop up. After each simulation ends, the corresponding plot will be produced in the `plot/` directory.
 
-The installation instructions above build three demo scenarios in the `bin/` directory:
-- Crowd Safety (executable `crowd_safety`)
-- Drones Recognition (executable `drones_recognition`)
-- Smart Home (executable `smart_home`)
+### Graphical User Interface
 
-To launch a scenario manually, move to the `bin` directory and run its executable. This will open a window displaying the simulation scenario, initially still: you can start running the simulation by pressing `P` (current simulated time is displayed in the bottom-left corner). While the simulation is running, network statistics will be periodically printed in the console, and aggregated in form of an Asymptote plot at simulation end. You can interact with the simulation through the following keys:
+Executing a graphical simulation will open a window displaying the simulation scenario, initially still: you can start running the simulation by pressing `P` (current simulated time is displayed in the bottom-left corner). While the simulation is running, network statistics will be periodically printed in the console, and aggregated in form of an Asymptote plot at simulation end. You can interact with the simulation through the following keys:
 - `Esc` to end the simulation
 - `P` to stop/resume
 - `O`/`I` to speed-up/slow-down simulated time
 - `L` to show/hide connection links between nodes
 - `G` to show/hide the grid on the reference plane and node pins
-- `Q`,`W`,`E`,`A`,`S`,`D` to move the simulation area along orthogonal axes
-- `C` resets the camera to the starting position
 - `M` enables/disables the marker for selecting nodes
 - `left-click` on a selected node to open a window with node details
+- `C` resets the camera to the starting position
+- `Q`,`W`,`E`,`A`,`S`,`D` to move the simulation area along orthogonal axes
 - `right-click`+`mouse drag` to rotate the camera
 - `mouse scroll` for zooming in and out
-- `left-shift` added to the commands above for precision control
+- `left-shift` added to the camera commands above for precision control
+- any other key will show/hide a legenda displaying this list
+Hovering on a node will also display its UID in the top-left corner.

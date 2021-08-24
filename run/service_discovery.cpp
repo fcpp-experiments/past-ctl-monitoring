@@ -120,7 +120,7 @@ int main() {
     plotter_t p;
     std::cout << "/*\n";
     {
-        component::interactive_simulator<opt>::net network{common::make_tagged_tuple<plotter,name,texture>(&p,"Service discovery","circuits.jpg")};
+        component::interactive_simulator<opt>::net network{common::make_tagged_tuple<plotter,name,texture>(&p,"Service Discovery","circuits.jpg")};
         network.run();
     }
     std::cout << "*/\n";
