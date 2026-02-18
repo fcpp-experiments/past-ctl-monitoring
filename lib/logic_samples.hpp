@@ -8,7 +8,8 @@
 #ifndef FCPP_LOGIC_SAMPLES_H_
 #define FCPP_LOGIC_SAMPLES_H_
 
-#include "lib/past_ctl.hpp"
+#include "lib/beautify.hpp"
+#include "lib/coordination/past_ctl.hpp"
 
 
 /**
