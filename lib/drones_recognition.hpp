@@ -157,7 +157,7 @@ MAIN() {
     using namespace component::tags;
 
     bool tower = node.uid < 4;
-    node.connector_data() = common::make_tagged_tuple<network_rank, power_ratio>(tower ? 0 : 1, tower ? 1 : 0.5);
+    node.connector_data() = common::make_tagged_tuple<network_rank, power_ratio, recv_power_ratio>(tower ? 0 : 1, tower ? 1 : 0.5, 1);
 
     status stat = tower ? status::QUIET : status::TIRED;
     vec<3> target = node.position();
