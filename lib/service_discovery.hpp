@@ -98,6 +98,18 @@ MAIN() {
     using namespace component::tags;
 
     if (node.storage(node_type{}) == devtype::EDGE) {
+	    node.connector_data() = common::make_tagged_tuple<network_rank,
+		    power_ratio, recv_power_ratio>(2, 0.8, 1.0);
+    }
+    if (node.storage(node_type{}) == devtype::FOG) {
+	    node.connector_data() = common::make_tagged_tuple<network_rank,
+		    power_ratio, recv_power_ratio>(1, 1.0, 1.0);
+    }
+    if (node.storage(node_type{}) == devtype::CLOUD) {
+	    node.connector_data() = common::make_tagged_tuple<network_rank,
+		    power_ratio, recv_power_ratio>(0, 1.0, 1.0);
+    }
+    if (node.storage(node_type{}) == devtype::EDGE) {
         // set random time to enter (between 0 and 20)
         times_t start_time = constant(CALL, node.next_real(0, 20));
         if (counter(CALL) == 1) {
