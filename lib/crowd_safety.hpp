@@ -64,9 +64,11 @@ constexpr double period = 1;
 //! @brief Main function.
 MAIN() {
     using namespace tags;
+    using namespace fcpp::component::tags;
 
     bool isarea = (node.uid < nareas);
-    node.connector_data() = isarea ? 1 : 0.5;
+    node.connector_data() = common::make_tagged_tuple<power_ratio,
+	    recv_power_ratio>(isarea ? 1 : 0.5, 1);
 
     times_t panic_time = constant(CALL, node.next_real(0, 300));
     times_t panic_length = constant(CALL, node.next_real(0, 100));
