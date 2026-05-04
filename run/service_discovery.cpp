@@ -55,14 +55,6 @@ CONSTANT_DISTRIBUTION(fog_d,   devtype, devtype::FOG);
 CONSTANT_DISTRIBUTION(cloud_d, devtype, devtype::CLOUD);
 //! @}
 
-//! @brief Description of the node connection data distributions.
-//! @{
-using conn_t = common::tagged_tuple_t<network_rank, int, power_ratio, real_t>;
-CONSTANT_DISTRIBUTION(edge_conn_d,  conn_t, conn_t(2, 0.8));
-CONSTANT_DISTRIBUTION(fog_conn_d,   conn_t, conn_t(1, 1.0));
-CONSTANT_DISTRIBUTION(cloud_conn_d, conn_t, conn_t(0, 1.0));
-//! @}
-
 //! @brief Description of the node shape distribution.
 CONSTANT_DISTRIBUTION(shape_d, shape, shape::sphere);
 
