@@ -13,11 +13,20 @@
 #include "lib/fcpp.hpp"
 #include "lib/logic_samples.hpp"
 
+// SIMULATION PARAMETER - EDIT TO UPDATE SCENARIO
+
+// UID of the source node
 constexpr int SOURCE		= 0;
+// UID of the user node
 constexpr int USER		= 99;
+// Probability of failure for the intermediate nodes (default: 10%)
 constexpr int FAIL_CHANCE	= 10;
+// Probability of repairment for the intermediate nodes (default: 40%)
 constexpr int REPAIR_CHANCE	= 40;
+// How often nodes can change state, since nodes have a 10Hz frequency 100
+// corresponds to 10s (default: 100 equivalent to 10s)
 constexpr int UPDATE_TIME	= 100;
+// Maximum distance for communication between nodes (default: 75)
 constexpr int COMM_RANGE	= 75;
 
 
