@@ -86,7 +86,7 @@ MAIN() {
 
     if (counter(CALL) == 1) {
 	    node.storage(size{}) = 15;
-	    node.storage(status_c{}) == color(GREEN);
+	    node.storage(status_c{}) = color(GREEN);
 	    node.storage(shape{}) = shape::cube;
 	    node.storage(curr_status{}) = sim_status::UP;
 	    srand(time(NULL));
