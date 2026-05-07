@@ -44,12 +44,9 @@ CONSTANT_DISTRIBUTION(shape_d, shape, shape::sphere);
 
 //! @brief Storage tags and types.
 using storage_t = tuple_store<
-    fail<timeout_monitor<1>>,      bool,
-    fail<timeout_monitor<2>>,      bool,
-    fail<timeout_monitor<3>>,      bool,
-    fail<timeout_monitor<4>>,      bool,
-    fail<spurious_monitor>,        bool,
-    fail<double_req_monitor>,      bool,
+    flag<device_up_monitor>,  bool,
+    flag<global_up_monitor>,   bool,
+    flag<device_biconnection_monitor>,   bool,
     status_c,                      color,
     shape,                         shape,
     size,                          double,
@@ -58,16 +55,13 @@ using storage_t = tuple_store<
 
 //! @brief Storage tags to be logged with aggregators.
 using aggregator_t = aggregators<
-    fail<timeout_monitor<1>>,      aggregator::mean<double>,
-    fail<timeout_monitor<2>>,      aggregator::mean<double>,
-    fail<timeout_monitor<3>>,      aggregator::mean<double>,
-    fail<timeout_monitor<4>>,      aggregator::mean<double>,
-    fail<spurious_monitor>,        aggregator::mean<double>,
-    fail<double_req_monitor>,      aggregator::mean<double>
+    flag<device_up_monitor>,  aggregator::count<double>,
+    flag<global_up_monitor>,   aggregator::count<double>,
+    flag<device_biconnection_monitor>,   aggregator::count<double>
 >;
 
 //! @brief Plot description.
-using plotter_t = plot::plotter<aggregator_t, plot::time, fail>;
+using plotter_t = plot::plotter<aggregator_t, plot::time, flag>;
 
 //! @brief Options list.
 DECLARE_OPTIONS(opt,

@@ -41,14 +41,11 @@ namespace coordination {
 namespace tags {
     //! @brief Parametric tag for formula failure.
     template <typename T>
-    struct fail {};
-    //! @brief Response time monitor formula for message type i.
-    template <int i>
-    struct timeout_monitor {};
+    struct flag {};
     //! @brief Unwanted response monitor formula.
-    struct spurious_monitor {};
-    //! @brief No double requests monitor formula.
-    struct double_req_monitor {};
+    struct device_up_monitor {};
+    struct global_up_monitor {};
+    struct device_biconnection_monitor {};
     //! @brief Color representing the status a node (compute, wait response by type).
     struct status_c {};
     //! @brief Size of the current node (strong monitor true < globally false < locally false).
@@ -59,24 +56,25 @@ namespace tags {
 //! @brief Status of devices.
 enum sim_status { UP, CONNECT, DOWN };
 
-//! @brief Colors to represent request type and status.
+//! @brief Colors to represent node status.
+// Green nodes are online.
+// Blue nodes are online and connected to the source and user node.
+// Black nodes are offline.
 packed_color status_colors[] = {GREEN, BLUE, BLACK};
 
-//! @brief Helper function to access storage.
-template <template<int> class T, typename node_t>
-bool& storage(node_t& node, size_t i) {
-    using namespace tags;
-    switch (i) {
-    case 1:
-        return node.storage(fail<T<1>>{});
-    case 2:
-        return node.storage(fail<T<2>>{});
-    case 3:
-        return node.storage(fail<T<3>>{});
-    default:
-        assert(i == 4);
-        return node.storage(fail<T<4>>{});
-    }
+FUN bool always_up(ARGS, bool up) { CODE
+    using namespace coordination::logic;
+    return true;
+}
+
+FUN bool nearby_up(ARGS, bool up) { CODE
+    using namespace coordination::logic;
+    return true;
+}
+
+FUN bool always_connected(ARGS, bool user, bool source) { CODE
+    using namespace coordination::logic;
+    return true;
 }
 
 //! @brief Service discovery case study.
@@ -106,24 +104,24 @@ MAIN() {
 		    }
 		    sim_status current_state = node.storage(curr_status{});
 		    node.storage(status_c{}) = color(status_colors[current_state]);
-		    return;
 	    }
     }
 
-    bool no_unwanted_response = true;
-    bool no_double_request = true;
-    bool local_unwanted = false;
-    bool local_duplicated = false;
-    bool local_delay = false;
+    bool device_up = node.storage(curr_status{}) != sim_status::DOWN;
+    bool source_conn = false;
+    bool user_conn = false;
     int from_source = 50*50;
     int from_user   = 50*50;
-    node.storage(fail<spurious_monitor>{}) = !no_unwanted_response;
-    node.storage(fail<double_req_monitor>{}) = !no_double_request;
     if (node.storage(curr_status{}) == sim_status::UP ||
 	node.storage(curr_status{}) == sim_status::CONNECT) {
 	    from_source = abf_hops(CALL, node.uid == SOURCE);
 	    from_user   = abf_hops(CALL, node.uid == USER);
     }
+    source_conn = from_source < 50;
+    user_conn = from_user < 50;
+    node.storage(flag<device_up_monitor>{}) = always_up(CALL, device_up);
+    node.storage(flag<global_up_monitor>{}) = nearby_up(CALL, device_up);
+    node.storage(flag<device_biconnection_monitor>{}) = always_connected(CALL, user_conn, source_conn);
     if (node.uid == SOURCE) {
         node.storage(shape{}) = shape::star;
 	node.storage(curr_status{}) = sim_status::UP;
@@ -131,7 +129,7 @@ MAIN() {
         node.storage(shape{}) = shape::tetrahedron;
 	node.storage(curr_status{}) = sim_status::UP;
     } else {
-        if (from_source < 50 && from_user < 50) {
+        if (source_conn && user_conn) {
 		node.storage(curr_status{}) = sim_status::CONNECT;
         } else {
 		if(node.storage(curr_status{}) == sim_status::CONNECT)
