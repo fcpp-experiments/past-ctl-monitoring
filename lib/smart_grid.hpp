@@ -42,7 +42,7 @@ namespace tags {
     //! @brief Parametric tag for formula.
     template <typename T>
     struct flag {};
-    //! @brief Unwanted response monitor formula.
+    //! @brief Tag for monitor formula.
     struct device_up_monitor {};
     struct global_up_monitor {};
     struct device_biconnection_monitor {};
@@ -82,7 +82,7 @@ FUN bool always_connected(ARGS, bool user, bool source) { CODE
     return true;
 }
 
-//! @brief Service discovery case study.
+//! @brief Smart grid case study.
 MAIN() {
     using namespace tags;
     using namespace component::tags;
