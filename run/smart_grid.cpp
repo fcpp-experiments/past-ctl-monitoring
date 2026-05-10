@@ -8,8 +8,8 @@ using namespace component::tags;
 using namespace coordination::tags;
 
 
-//! @brief Number of edge nodes
-constexpr size_t edge_num = 100;
+//! @brief Number of node nodes
+constexpr size_t node_num = 100;
 
 //! @brief Dimensionality of the space.
 constexpr size_t dim = 2;
@@ -22,7 +22,7 @@ constexpr size_t end_time = 150;
 using round_s = sequence::periodic<
     distribution::interval_n<times_t, 0, 1>,
     distribution::weibull_n<times_t, 10, 1, 100>,
-    distribution::constant_n<times_t, 2*end_time>
+    distribution::constant_n<times_t, end_time+10>
 >;
 
 //! @brief Description of the export schedule.
@@ -30,13 +30,12 @@ using export_s = sequence::periodic_n<1, 0, 1, end_time>;
 
 //! @brief Description of the sequences of node creation events.
 //! @{
-using edge_spawn_s  = sequence::multiple_n<edge_num,  0>;
+using node_spawn_s  = sequence::multiple_n<node_num,  0>;
 //! @}
 
 //! @brief Description of the initial position distributions.
 //! @{
-//using edge_circle_d  = sequence::circle_n<1, 500, 500, 0, 0, 0, 300, edge_num>;
-using edge_circle_d  = sequence::grid_n<1, 0, 0, 500, 500, 10, 10>;
+using node_grid_d  = sequence::grid_n<1, 0, 0, 500, 500, 10, 10>;
 //! @}
 
 //! @brief Description of the node shape distribution.
@@ -48,6 +47,7 @@ using storage_t = tuple_store<
     flag<global_up_monitor>,   bool,
     flag<device_biconnection_monitor>,   bool,
     status_c,                      color,
+    property_c,                    color,
     shape,                         shape,
     size,                          double,
     curr_status,		   fcpp::coordination::sim_status
@@ -74,9 +74,9 @@ DECLARE_OPTIONS(opt,
     connector<connect::fixed<COMM_RANGE, 1, dim>>,
     round_schedule<round_s>,
     log_schedule<export_s>,
-    spawn_schedule<edge_spawn_s>,
+    spawn_schedule<node_spawn_s>,
     init<
-	shape, shape_d, x, edge_circle_d,
+	shape, shape_d, x, node_grid_d,
 	size, distribution::constant_n<double, 0>,
 	network_rank, distribution::constant_n<int, 2>,
 	send_power_ratio, distribution::constant_n<double, 8, 10>,
@@ -85,7 +85,7 @@ DECLARE_OPTIONS(opt,
     aggregator_t,
     plot_type<plotter_t>,
     size_tag<size>,
-    color_tag<status_c>,
+    color_tag<status_c, property_c>,
     shape_tag<shape>
 );
 

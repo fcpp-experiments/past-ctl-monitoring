@@ -46,11 +46,16 @@ namespace tags {
     struct device_up_monitor {};
     struct global_up_monitor {};
     struct device_biconnection_monitor {};
-    //! @brief Color representing the status a node (compute, wait response by type).
+    //! @brief Color representing the status a node (online, connected, offline).
     struct status_c {};
-    //! @brief Size of the current node (strong monitor true < globally false < locally false).
-    struct size {};
+    //! @brief Color representing the property of a node (to be used for
+    // displaying verified property on the single node while running the
+    // simulation).
+    struct property_c {};
+    //! @brief Enum representing the status a node (online, connected, offline).
     struct curr_status {};
+    //! @brief Size of the current node.
+    struct size {};
 }
 
 //! @brief Status of devices.
@@ -82,15 +87,18 @@ MAIN() {
     using namespace tags;
     using namespace component::tags;
 
+    // Node initialization
     if (counter(CALL) == 1) {
 	    node.storage(size{}) = 15;
 	    node.storage(status_c{}) = color(GREEN);
+	    node.storage(property_c{}) = color(GRAY);
 	    node.storage(shape{}) = shape::cube;
 	    node.storage(curr_status{}) = sim_status::UP;
 	    srand(time(NULL));
 	    return;
     }
 
+    // Update intermediate node
     if (node.uid != SOURCE && node.uid != USER) {
 	    int toggle_chance = 100;
 	    if (counter(CALL) % UPDATE_TIME == 0) {
@@ -138,6 +146,13 @@ MAIN() {
     }
     sim_status current_state = node.storage(curr_status{});
     node.storage(status_c{}) = color(status_colors[current_state]);
+
+    // Change color based on specified property value
+    if ( node.storage(flag<device_up_monitor>{}) ) {
+	    node.storage(property_c{}) = color(GREEN);
+    } else {
+	    node.storage(property_c{}) = color(RED);
+    }
 }
 FUN_EXPORT main_t = common::export_list<
 	real_t,
