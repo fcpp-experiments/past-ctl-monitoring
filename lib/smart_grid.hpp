@@ -39,7 +39,7 @@ namespace fcpp {
 namespace coordination {
 
 namespace tags {
-    //! @brief Parametric tag for formula failure.
+    //! @brief Parametric tag for formula.
     template <typename T>
     struct flag {};
     //! @brief Unwanted response monitor formula.
