@@ -1,6 +1,6 @@
 # Past-CTL Monitoring in Field Calculus
 
-This repository contains the implementation of a monitoring system for past-CTL logic formulas based on Field Calculus (submitted to Journal of Systems and Software). It also contains three graphical demo scenarios where past-CTL formulas are monitored during the simulation of distributed systems.
+This repository contains the implementation of a monitoring system for past-CTL logic formulas based on Field Calculus (see ["Distributed runtime verification by past-CTL and the field calculus", J. Systems and Software vol. 187](https://doi.org/10.1016/j.jss.2022.111251), 2022). It also contains three graphical demo scenarios where past-CTL formulas are monitored during the simulation of distributed systems.
 
 ## Installation
 
